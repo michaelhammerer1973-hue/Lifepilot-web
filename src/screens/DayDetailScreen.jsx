@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { supabase } from '../App'
 import AppHeader from '../components/AppHeader'
 
@@ -72,6 +73,26 @@ export default function DayDetailScreen() {
     return `https://www.google.com/maps/search/${encodeURIComponent(address)}`
   }
 
+  const handleDragEnd = async (result) => {
+    const { source, destination, draggableId } = result
+    if (!destination) return
+    if (source.index === destination.index) return
+
+    const sorted = [...activities].sort((a, b) => a.reihenfolge - b.reihenfolge)
+    const [movedActivity] = sorted.splice(source.index, 1)
+    sorted.splice(destination.index, 0, movedActivity)
+
+    const updates = sorted.map((activity, idx) => ({
+      id: activity.id,
+      reihenfolge: idx
+    }))
+
+    for (const update of updates) {
+      await supabase.from('activities').update({ reihenfolge: update.reihenfolge }).eq('id', update.id)
+    }
+    await loadData()
+  }
+
   const handleAddActivity = async () => {
     const newActivity = {
       day_id: dayId,
@@ -131,8 +152,14 @@ export default function DayDetailScreen() {
 
       <div className="card" style={{ borderLeft: '4px solid #0B4F6C' }}>
         <h3 className="section-title">📋 Aktivitäten</h3>
-        {activities.map((a, idx) => (
-          <div key={a.id} style={{ padding: '12px', marginBottom: idx === activities.length - 1 ? 0 : '8px', backgroundColor: '#F5F7FA', borderRadius: '6px', borderLeft: '4px solid #0B4F6C' }}>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="activities">
+            {(provided, snapshot) => (
+              <div ref={provided.innerRef} {...provided.droppableProps} style={{ backgroundColor: snapshot.isDraggingOver ? '#f0f0f0' : 'transparent', borderRadius: '4px', padding: '4px' }}>
+                {activities.map((a, idx) => (
+                  <Draggable key={a.id} draggableId={a.id} index={idx}>
+                    {(provided, snapshot) => (
+                      <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} style={{ padding: '12px', marginBottom: idx === activities.length - 1 ? 0 : '8px', backgroundColor: snapshot.isDragging ? '#E8F0F5' : '#F5F7FA', borderRadius: '6px', borderLeft: '4px solid #0B4F6C', ...provided.draggableProps.style }}>
             {editingId === a.id ? (
               <div>
                 <input type="text" value={editForm.typ || ''} onChange={(e) => setEditForm({...editForm, typ: e.target.value})} placeholder="Typ" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
@@ -151,15 +178,20 @@ export default function DayDetailScreen() {
                   {a.adresse && <p style={{ margin: '4px 0 0 0' }}><a href={getMapsLink(a.adresse)} target="_blank" rel="noopener noreferrer" style={{ color: '#0B4F6C', textDecoration: 'none', cursor: 'pointer' }}>📍 {a.adresse} 🗺️</a></p>}
                 </div>
                 <div style={{ display: 'flex', gap: '4px' }}>
-                  {idx > 0 && <button onClick={() => handleMove(a.id, 'up')} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', backgroundColor: '#0B4F6C', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>↑</button>}
-                  {idx < activities.length - 1 && <button onClick={() => handleMove(a.id, 'down')} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', backgroundColor: '#0B4F6C', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>↓</button>}
                   <button className="btn-gold" onClick={() => { setEditingId(a.id); setEditForm(a); }} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}>✎</button>
                   <button className="btn-danger" onClick={() => handleDelete('activities', a.id)} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}>✕</button>
                 </div>
               </div>
             )}
-          </div>
-        ))}
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       </div>
 
       {accommodations.length > 0 && (
