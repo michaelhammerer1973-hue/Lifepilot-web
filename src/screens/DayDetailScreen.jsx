@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../App'
-import { mockDays, mockActivities, mockAccommodations } from '../mock-data'
 import AppHeader from '../components/AppHeader'
 
 export default function DayDetailScreen() {
@@ -21,44 +20,20 @@ export default function DayDetailScreen() {
 
       // Lade Day
       const { data: dayData } = await supabase.from('days').select('*').eq('id', dayId).single()
-      if (dayData) {
-        setDay(dayData)
-      } else {
-        // Nutze Mock-Daten
-        const mockDay = mockDays.find(d => d.id === dayId)
-        setDay(mockDay)
-      }
+      setDay(dayData || null)
 
       // Lade Activities
       const { data: activitiesData } = await supabase.from('activities').select('*').eq('day_id', dayId).order('reihenfolge')
-      if (activitiesData && activitiesData.length > 0) {
-        setActivities(activitiesData)
-      } else {
-        // Nutze Mock-Daten
-        const mockActivitiesList = mockActivities.filter(a => a.day_id === dayId).sort((a, b) => a.reihenfolge - b.reihenfolge)
-        setActivities(mockActivitiesList)
-      }
+      setActivities(activitiesData || [])
 
       // Lade Accommodations (mehrere möglich)
-      const { data: accommodationsData, error: accError } = await supabase.from('accommodations').select('*').eq('day_id', dayId)
-      console.log(`Accommodations für day ${dayId}:`, accommodationsData, 'Error:', accError)
-      if (accommodationsData && accommodationsData.length > 0) {
-        setAccommodations(accommodationsData)
-      } else {
-        // Nutze Mock-Daten (alle accommodations für diesen day)
-        const mockAccommodationsList = mockAccommodations.filter(a => a.day_id === dayId)
-        console.log('Using mock accommodations:', mockAccommodationsList)
-        setAccommodations(mockAccommodationsList)
-      }
+      const { data: accommodationsData } = await supabase.from('accommodations').select('*').eq('day_id', dayId)
+      setAccommodations(accommodationsData || [])
     } catch (err) {
-      // Fallback zu Mock-Daten
-      console.warn('Error loading data, using mock data:', err.message)
-      const mockDay = mockDays.find(d => d.id === dayId)
-      const mockActivitiesList = mockActivities.filter(a => a.day_id === dayId).sort((a, b) => a.reihenfolge - b.reihenfolge)
-      const mockAccommodationsList = mockAccommodations.filter(a => a.day_id === dayId)
-      setDay(mockDay)
-      setActivities(mockActivitiesList)
-      setAccommodations(mockAccommodationsList)
+      console.warn('Error loading data:', err.message)
+      setDay(null)
+      setActivities([])
+      setAccommodations([])
     } finally { setLoading(false) }
   }
 

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../App'
-import { mockTrips } from '../mock-data'
 import AppHeader from '../components/AppHeader'
 
 export default function TripListScreen() {
@@ -28,13 +27,13 @@ export default function TripListScreen() {
         .from('trips')
         .select('*')
 
-      let tripsData = data || mockTrips
+      let tripsData = data || []
       if (err) {
-        console.warn('Supabase Fehler, nutze Mock-Daten:', err.message)
-        tripsData = mockTrips
+        console.warn('Supabase Fehler:', err.message)
+        tripsData = []
       } else if (!data || data.length === 0) {
-        console.warn('Supabase leer, nutze Mock-Daten')
-        tripsData = mockTrips
+        console.warn('Keine Reisen vorhanden')
+        tripsData = []
       }
 
       // Automatisch auf "laufend" setzen, wenn Reise-Startdatum erreicht
@@ -56,8 +55,8 @@ export default function TripListScreen() {
         setAllTrips(tripsData)
       }
     } catch (err) {
-      console.warn('Error loading trips, using mock data:', err.message)
-      setAllTrips(mockTrips)
+      console.warn('Error loading trips:', err.message)
+      setAllTrips([])
     } finally {
       setLoading(false)
     }

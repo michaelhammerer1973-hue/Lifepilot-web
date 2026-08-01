@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../App'
-import { mockTrips, mockDays } from '../mock-data'
 import AppHeader from '../components/AppHeader'
 
 export default function DaysOverviewScreen() {
@@ -27,9 +26,8 @@ export default function DaysOverviewScreen() {
         .single()
 
       if (tripErr) {
-        // Nutze Mock-Daten
-        const mockTrip = mockTrips.find(t => t.id === tripId)
-        setTrip(mockTrip)
+        console.warn('Trip nicht gefunden:', tripErr.message)
+        setTrip(null)
       } else {
         setTrip(tripData)
       }
@@ -42,19 +40,15 @@ export default function DaysOverviewScreen() {
         .order('datum', { ascending: true })
 
       if (daysErr) {
-        // Nutze Mock-Daten
-        const mockDaysList = mockDays.filter(d => d.trip_id === tripId)
-        setDays(mockDaysList)
+        console.warn('Days nicht geladen:', daysErr.message)
+        setDays([])
       } else {
         setDays(daysData || [])
       }
     } catch (err) {
-      // Fallback zu Mock-Daten bei Error
-      console.warn('Error loading data, using mock data:', err.message)
-      const mockTrip = mockTrips.find(t => t.id === tripId)
-      const mockDaysList = mockDays.filter(d => d.trip_id === tripId)
-      setTrip(mockTrip)
-      setDays(mockDaysList)
+      console.warn('Error loading data:', err.message)
+      setTrip(null)
+      setDays([])
     } finally {
       setLoading(false)
     }
