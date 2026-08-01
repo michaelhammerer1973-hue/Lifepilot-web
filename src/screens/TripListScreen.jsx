@@ -265,6 +265,7 @@ export default function TripListScreen() {
                 typ: activity.typ,
                 titel: activity.titel,
                 dauer_geschätzt: activity.dauer_geschätzt || null,
+                adresse: activity.adresse || null,
                 reihenfolge: actIdx
               })
             })
