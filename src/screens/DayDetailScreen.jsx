@@ -137,7 +137,8 @@ export default function DayDetailScreen() {
               <div>
                 <input type="text" value={editForm.typ || ''} onChange={(e) => setEditForm({...editForm, typ: e.target.value})} placeholder="Typ" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
                 <input type="text" value={editForm.titel || ''} onChange={(e) => setEditForm({...editForm, titel: e.target.value})} placeholder="Titel" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
-                <input type="text" value={editForm.dauer_geschätzt || ''} onChange={(e) => setEditForm({...editForm, dauer_geschätzt: e.target.value})} placeholder="Dauer" style={{ width: '100%', padding: '6px', marginBottom: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
+                <input type="text" value={editForm.dauer_geschätzt || ''} onChange={(e) => setEditForm({...editForm, dauer_geschätzt: e.target.value})} placeholder="Dauer" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
+                <input type="text" value={editForm.adresse || ''} onChange={(e) => setEditForm({...editForm, adresse: e.target.value})} placeholder="Adresse (für Google Maps)" style={{ width: '100%', padding: '6px', marginBottom: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
                 <button className="btn-gold" onClick={() => handleSave('activities', a.id)} style={{ marginRight: '8px' }}>💾 Speichern</button>
                 <button className="btn-danger" onClick={() => setEditingId(null)}>Abbrechen</button>
               </div>
@@ -147,6 +148,7 @@ export default function DayDetailScreen() {
                   <p style={{ fontWeight: 'bold', margin: '0 0 4px 0', color: '#0B4F6C' }}>{a.typ}</p>
                   <p style={{ margin: '0 0 4px 0' }}>{a.titel}</p>
                   <p className="text-muted" style={{ margin: 0 }}>⏱️ {a.dauer_geschätzt}</p>
+                  {a.adresse && <p style={{ margin: '4px 0 0 0' }}><a href={getMapsLink(a.adresse)} target="_blank" rel="noopener noreferrer" style={{ color: '#0B4F6C', textDecoration: 'none', cursor: 'pointer' }}>📍 {a.adresse} 🗺️</a></p>}
                 </div>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   {idx > 0 && <button className="btn-gold" onClick={() => handleMove(a.id, 'up')} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}>↑</button>}
