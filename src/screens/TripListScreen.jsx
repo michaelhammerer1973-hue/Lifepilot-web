@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../App'
 import AppHeader from '../components/AppHeader'
 import TrashIcon from '../components/TrashIcon'
+import SaveIcon from '../components/SaveIcon'
+import CancelIcon from '../components/CancelIcon'
 
 export default function TripListScreen() {
   const navigate = useNavigate()
@@ -496,9 +498,9 @@ export default function TripListScreen() {
                 placeholder="Reise-Name"
                 style={{ width: '100%', padding: '12px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '16px' }}
               />
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="btn-gold" onClick={() => handleSave(trip.id)}>💾 Speichern</button>
-                <button className="btn-danger" onClick={() => setEditingId(null)}>Abbrechen</button>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button onClick={() => handleSave(trip.id)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#0B4F6C', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><SaveIcon size={20} /></button>
+                <button onClick={() => setEditingId(null)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#dc2626', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><CancelIcon size={20} /></button>
               </div>
             </div>
           ) : (
