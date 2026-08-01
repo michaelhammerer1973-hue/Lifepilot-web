@@ -532,7 +532,7 @@ export default function TripListScreen() {
                     onClick={(e) => { e.stopPropagation(); handleDelete(trip.id); }}
                     style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}
                   >
-                    ✕
+                    🗑️
                   </button>
                 </div>
               </div>
