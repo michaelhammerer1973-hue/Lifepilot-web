@@ -136,8 +136,10 @@ export default function DayDetailScreen() {
             <input type="text" value={editForm.start_adresse || ''} onChange={(e) => setEditForm({...editForm, start_adresse: e.target.value})} placeholder="Start-Adresse" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
             <input type="text" value={editForm.ziel_adresse || ''} onChange={(e) => setEditForm({...editForm, ziel_adresse: e.target.value})} placeholder="Ziel-Adresse" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
             <input type="text" value={editForm.strecke_km || ''} onChange={(e) => setEditForm({...editForm, strecke_km: e.target.value})} placeholder="Strecke (km)" style={{ width: '100%', padding: '6px', marginBottom: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
-            <button onClick={() => handleSave('days', dayId)} style={{ marginRight: '8px', width: '32px', height: '32px', padding: '0', backgroundColor: '#0B4F6C', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><SaveIcon size={20} /></button>
-            <button onClick={() => setEditingId(null)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#dc2626', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><CancelIcon size={20} /></button>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button onClick={() => handleSave('days', dayId)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#0B4F6C', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><SaveIcon size={20} /></button>
+              <button onClick={() => setEditingId(null)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#dc2626', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><CancelIcon size={20} /></button>
+            </div>
           </div>
         ) : (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
@@ -169,8 +171,10 @@ export default function DayDetailScreen() {
                 <input type="text" value={editForm.titel || ''} onChange={(e) => setEditForm({...editForm, titel: e.target.value})} placeholder="Titel" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
                 <input type="text" value={editForm.dauer_geschätzt || ''} onChange={(e) => setEditForm({...editForm, dauer_geschätzt: e.target.value})} placeholder="Dauer" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
                 <input type="text" value={editForm.adresse || ''} onChange={(e) => setEditForm({...editForm, adresse: e.target.value})} placeholder="Adresse (für Google Maps)" style={{ width: '100%', padding: '6px', marginBottom: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
-                <button className="btn-gold" onClick={() => handleSave('activities', a.id)} style={{ marginRight: '8px' }}>💾 Speichern</button>
-                <button onClick={() => setEditingId(null)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#dc2626', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><CancelIcon size={20} /></button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button onClick={() => handleSave('activities', a.id)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#0B4F6C', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><SaveIcon size={20} /></button>
+                  <button onClick={() => setEditingId(null)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#dc2626', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><CancelIcon size={20} /></button>
+                </div>
               </div>
             ) : (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
@@ -208,8 +212,10 @@ export default function DayDetailScreen() {
                   <input type="text" value={editForm.typ || ''} onChange={(e) => setEditForm({...editForm, typ: e.target.value})} placeholder="Typ" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
                   <input type="text" value={editForm.kosten || ''} onChange={(e) => setEditForm({...editForm, kosten: e.target.value})} placeholder="Kosten" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
                   <input type="text" value={editForm.adresse || ''} onChange={(e) => setEditForm({...editForm, adresse: e.target.value})} placeholder="Adresse" style={{ width: '100%', padding: '6px', marginBottom: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
-                  <button className="btn-gold" onClick={() => handleSave('accommodations', accommodation.id)} style={{ marginRight: '8px' }}>💾 Speichern</button>
-                  <button onClick={() => setEditingId(null)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#dc2626', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><CancelIcon size={20} /></button>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <button onClick={() => handleSave('accommodations', accommodation.id)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#0B4F6C', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><SaveIcon size={20} /></button>
+                    <button onClick={() => setEditingId(null)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#dc2626', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><CancelIcon size={20} /></button>
+                  </div>
                 </div>
               ) : (
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
