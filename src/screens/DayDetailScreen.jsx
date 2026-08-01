@@ -178,11 +178,14 @@ export default function DayDetailScreen() {
               </div>
             ) : (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                <div>
-                  <p style={{ fontWeight: 'bold', margin: '0 0 4px 0', color: '#0B4F6C' }}>{a.typ}</p>
-                  <p style={{ margin: '0 0 4px 0' }}>{a.titel}</p>
-                  <p className="text-muted" style={{ margin: 0 }}>⏱️ {a.dauer_geschätzt}</p>
-                  {a.adresse && <p style={{ margin: '4px 0 0 0' }}><a href={getMapsLink(a.adresse)} target="_blank" rel="noopener noreferrer" style={{ color: '#0B4F6C', textDecoration: 'none', cursor: 'pointer' }}>📍 {a.adresse} 🗺️</a></p>}
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: '18px', cursor: 'grab', color: '#999', userSelect: 'none', marginTop: '2px' }}>☰</span>
+                  <div>
+                    <p style={{ fontWeight: 'bold', margin: '0 0 4px 0', color: '#0B4F6C' }}>{a.typ}</p>
+                    <p style={{ margin: '0 0 4px 0' }}>{a.titel}</p>
+                    <p className="text-muted" style={{ margin: 0 }}>⏱️ {a.dauer_geschätzt}</p>
+                    {a.adresse && <p style={{ margin: '4px 0 0 0' }}><a href={getMapsLink(a.adresse)} target="_blank" rel="noopener noreferrer" style={{ color: '#0B4F6C', textDecoration: 'none', cursor: 'pointer' }}>📍 {a.adresse} 🗺️</a></p>}
+                  </div>
                 </div>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <button className="btn-gold" onClick={() => { setEditingId(a.id); setEditForm(a); }} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}>✎</button>
