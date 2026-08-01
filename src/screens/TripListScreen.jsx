@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../App'
 import AppHeader from '../components/AppHeader'
+import TrashIcon from '../components/TrashIcon'
 
 export default function TripListScreen() {
   const navigate = useNavigate()
@@ -530,9 +531,9 @@ export default function TripListScreen() {
                     type="button"
                     className="btn-danger"
                     onClick={(e) => { e.stopPropagation(); handleDelete(trip.id); }}
-                    style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}
+                    style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', background: 'none', border: 'none', cursor: 'pointer' }}
                   >
-                    🗑️
+                    <TrashIcon size={20} />
                   </button>
                 </div>
               </div>

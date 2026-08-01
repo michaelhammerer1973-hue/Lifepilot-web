@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { supabase } from '../App'
 import AppHeader from '../components/AppHeader'
+import TrashIcon from '../components/TrashIcon'
 
 export default function DayDetailScreen() {
   const { dayId } = useParams()
@@ -179,7 +180,7 @@ export default function DayDetailScreen() {
                 </div>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <button className="btn-gold" onClick={() => { setEditingId(a.id); setEditForm(a); }} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}>✎</button>
-                  <button className="btn-danger" onClick={() => handleDelete('activities', a.id)} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}>🗑️</button>
+                  <button className="btn-danger" onClick={() => handleDelete('activities', a.id)} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', background: 'none', border: 'none', cursor: 'pointer' }}><TrashIcon size={20} /></button>
                 </div>
               </div>
             )}
@@ -213,7 +214,7 @@ export default function DayDetailScreen() {
                   <div><p style={{ fontWeight: 'bold', margin: '0 0 4px 0' }}>{accommodation.name}</p>{accommodation.kosten && <p className="text-muted" style={{ margin: '0 0 4px 0' }}>{accommodation.kosten}</p>}<p className="text-muted" style={{ margin: 0 }}><a href={getMapsLink(accommodation.adresse)} target="_blank" rel="noopener noreferrer" style={{ color: '#666', textDecoration: 'none' }}>{accommodation.adresse} 🗺️</a></p></div>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     <button className="btn-gold" onClick={() => { setEditingId(accommodation.id); setEditForm(accommodation); }} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}>✎</button>
-                    <button className="btn-danger" onClick={() => handleDelete('accommodations', accommodation.id)} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}>🗑️</button>
+                    <button className="btn-danger" onClick={() => handleDelete('accommodations', accommodation.id)} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', background: 'none', border: 'none', cursor: 'pointer' }}><TrashIcon size={20} /></button>
                   </div>
                 </div>
               )}
