@@ -170,6 +170,7 @@ export default function DayDetailScreen() {
                 <input type="text" value={editForm.typ || ''} onChange={(e) => setEditForm({...editForm, typ: e.target.value})} placeholder="Typ" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
                 <input type="text" value={editForm.titel || ''} onChange={(e) => setEditForm({...editForm, titel: e.target.value})} placeholder="Titel" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
                 <input type="text" value={editForm.dauer_geschätzt || ''} onChange={(e) => setEditForm({...editForm, dauer_geschätzt: e.target.value})} placeholder="Dauer" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
+                <input type="time" value={editForm.beginn_uhrzeit || ''} onChange={(e) => setEditForm({...editForm, beginn_uhrzeit: e.target.value})} placeholder="Startzeit (optional)" style={{ width: '100%', padding: '6px', marginBottom: '6px', borderRadius: '4px', border: '1px solid #ddd' }} />
                 <input type="text" value={editForm.adresse || ''} onChange={(e) => setEditForm({...editForm, adresse: e.target.value})} placeholder="Adresse (für Google Maps)" style={{ width: '100%', padding: '6px', marginBottom: '8px', borderRadius: '4px', border: '1px solid #ddd' }} />
                 <div style={{ display: 'flex', gap: '12px' }}>
                   <button onClick={() => handleSave('activities', a.id)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#0B4F6C', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><SaveIcon size={20} /></button>
@@ -183,7 +184,7 @@ export default function DayDetailScreen() {
                   <div>
                     <p style={{ fontWeight: 'bold', margin: '0 0 4px 0', color: '#0B4F6C' }}>{a.typ}</p>
                     <p style={{ margin: '0 0 4px 0' }}>{a.titel}</p>
-                    <p className="text-muted" style={{ margin: 0 }}>⏱️ {a.dauer_geschätzt}</p>
+                    <p className="text-muted" style={{ margin: 0 }}>⏱️ {a.dauer_geschätzt}{a.beginn_uhrzeit && ` · 🕐 ${a.beginn_uhrzeit}`}</p>
                     {a.adresse && <p style={{ margin: '4px 0 0 0' }}><a href={getMapsLink(a.adresse)} target="_blank" rel="noopener noreferrer" style={{ color: '#0B4F6C', textDecoration: 'none', cursor: 'pointer' }}>📍 {a.adresse} 🗺️</a></p>}
                   </div>
                 </div>
