@@ -336,23 +336,6 @@ export default function TripListScreen() {
       {/* Filter Tabs + Import Button */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
         <button
-          onClick={() => setFilter('alle')}
-          style={{
-            padding: '8px 16px',
-            borderRadius: '6px',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: '500',
-            minHeight: '44px',
-            background: filter === 'alle' ? '#0B4F6C' : '#E8E8E8',
-            color: filter === 'alle' ? 'white' : '#333',
-            transition: 'all 0.2s'
-          }}
-        >
-          Alle
-        </button>
-        <button
           onClick={() => setFilter('geplant')}
           style={{
             padding: '8px 16px',
@@ -385,6 +368,23 @@ export default function TripListScreen() {
           }}
         >
           Archiviert
+        </button>
+        <button
+          onClick={() => setFilter('alle')}
+          style={{
+            padding: '8px 16px',
+            borderRadius: '6px',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: '500',
+            minHeight: '44px',
+            background: filter === 'alle' ? '#0B4F6C' : '#E8E8E8',
+            color: filter === 'alle' ? 'white' : '#333',
+            transition: 'all 0.2s'
+          }}
+        >
+          Alle
         </button>
         <button
           onClick={() => setShowImportModal(true)}

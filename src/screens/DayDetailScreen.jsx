@@ -88,11 +88,25 @@ export default function DayDetailScreen() {
     return `https://www.google.com/maps/search/${encodeURIComponent(address)}`
   }
 
+  const handlePreviousDay = () => {
+    const currentIndex = allDays.findIndex(d => d.id === dayId)
+    if (currentIndex > 0) {
+      const prevDay = allDays[currentIndex - 1]
+      navigate(`/day/${prevDay.id}`)
+    }
+  }
+
   const handleNextDay = () => {
     const currentIndex = allDays.findIndex(d => d.id === dayId)
     if (currentIndex >= 0 && currentIndex < allDays.length - 1) {
       const nextDay = allDays[currentIndex + 1]
       navigate(`/day/${nextDay.id}`)
+    }
+  }
+
+  const handleBackToTrip = () => {
+    if (day?.trip_id) {
+      navigate(`/trip/${day.trip_id}`)
     }
   }
 
@@ -146,11 +160,16 @@ export default function DayDetailScreen() {
   return (
     <div className="container">
       <AppHeader />
-      <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
-        <button className="back-btn" onClick={() => window.history.back()}>← Zurück</button>
-        {allDays.length > 0 && allDays.findIndex(d => d.id === dayId) < allDays.length - 1 ? (
-          <button className="back-btn" onClick={handleNextDay}>Tag →</button>
-        ) : null}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <button className="back-btn" onClick={handleBackToTrip}>← Zurück</button>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          {allDays.length > 0 && allDays.findIndex(d => d.id === dayId) > 0 ? (
+            <button className="back-btn" onClick={handlePreviousDay}>Tag ←</button>
+          ) : null}
+          {allDays.length > 0 && allDays.findIndex(d => d.id === dayId) < allDays.length - 1 ? (
+            <button className="back-btn" onClick={handleNextDay}>Tag →</button>
+          ) : null}
+        </div>
       </div>
       <h1 style={{ color: '#0B4F6C' }}>{new Date(day.datum).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</h1>
 
