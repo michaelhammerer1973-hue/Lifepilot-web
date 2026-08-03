@@ -18,6 +18,8 @@ export default function TripListScreen() {
   const [showImportModal, setShowImportModal] = useState(false)
   const [importJson, setImportJson] = useState('')
   const [importError, setImportError] = useState('')
+  const [duplicateDialog, setDuplicateDialog] = useState(null)
+  const [deleteDialog, setDeleteDialog] = useState(null)
 
   useEffect(() => {
     loadTrips()
@@ -103,13 +105,22 @@ export default function TripListScreen() {
   const filteredTrips = useMemo(() => applyFiltersAndSort(), [applyFiltersAndSort])
 
   const handleDelete = async (tripId) => {
-    if (!confirm('Reise wirklich löschen? (Das löscht auch alle Tage, Aktivitäten und Übernachtungen)')) return
-    try {
-      await supabase.from('trips').delete().eq('id', tripId)
-      await loadTrips()
-    } catch (err) {
-      console.error('Fehler beim Löschen:', err)
-    }
+    // Finde Trip-Titel für Modal
+    const trip = allTrips.find(t => t.id === tripId)
+    setDeleteDialog({
+      titel: trip?.titel || 'Unbekannte Reise',
+      tripId,
+      onConfirm: async () => {
+        try {
+          await supabase.from('trips').delete().eq('id', tripId)
+          setDeleteDialog(null)
+          await loadTrips()
+        } catch (err) {
+          console.error('Fehler beim Löschen:', err)
+          setDeleteDialog(null)
+        }
+      }
+    })
   }
 
   const handleSave = async (tripId) => {
@@ -209,20 +220,238 @@ export default function TripListScreen() {
         return
       }
 
-      // Trip erstellen
-      const { data: tripInsert, error: tripError } = await supabase
+      // Duplikat-Check: Prüfe ob Trip mit gleichem Titel schon existiert
+      const { data: existingTrips } = await supabase
         .from('trips')
-        .insert([{
-          titel: tripData.titel,
-          start_datum: tripData.start_datum,
-          end_datum: tripData.end_datum,
-          status: 'geplant',
-          standard_schwerpunkte: tripData.schwerpunkte || []
-        }])
-        .select()
+        .select('*')
+        .eq('titel', tripData.titel)
 
-      if (tripError) throw tripError
-      const tripId = tripInsert[0].id
+      const existingTrip = existingTrips && existingTrips.length > 0 ? existingTrips[0] : null
+      let tripId
+
+      if (existingTrip) {
+        // Modal mit Callbacks öffnen
+        setDuplicateDialog({
+          titel: tripData.titel,
+          onReplace: async () => {
+            try {
+              // UPDATE: Alte Reise ersetzen
+              const { error: updateError } = await supabase
+                .from('trips')
+                .update({
+                  start_datum: tripData.start_datum,
+                  end_datum: tripData.end_datum,
+                  standard_schwerpunkte: tripData.schwerpunkte || []
+                })
+                .eq('id', existingTrip.id)
+
+              if (updateError) throw updateError
+
+              // Lösche alle alte Tage/Aktivitäten/Unterkünfte
+              const { data: oldDays } = await supabase.from('days').select('id').eq('trip_id', existingTrip.id)
+              if (oldDays) {
+                await Promise.all(
+                  oldDays.map(day =>
+                    Promise.all([
+                      supabase.from('activities').delete().eq('day_id', day.id),
+                      supabase.from('accommodations').delete().eq('day_id', day.id)
+                    ])
+                  )
+                )
+              }
+              await supabase.from('days').delete().eq('trip_id', existingTrip.id)
+
+              // Tage neu erstellen
+              const daysToInsert = tripData.days.map(day => ({
+                trip_id: existingTrip.id,
+                datum: day.datum,
+                start_adresse: day.start_adresse || null,
+                ziel_adresse: day.ziel_adresse,
+                strecke_km: day.strecke_km || null,
+                fahrzeit_geschätzt: day.fahrzeit_geschätzt || null,
+                schwerpunkte: day.schwerpunkte || []
+              }))
+
+              const { data: daysInsert, error: daysError } = await supabase
+                .from('days')
+                .insert(daysToInsert)
+                .select()
+
+              if (daysError) throw daysError
+
+              // Aktivitäten erstellen
+              if (tripData.days.some(d => d.activities)) {
+                const activitiesToInsert = []
+                tripData.days.forEach((day, dayIdx) => {
+                  if (day.activities && Array.isArray(day.activities)) {
+                    day.activities.forEach((activity, actIdx) => {
+                      activitiesToInsert.push({
+                        day_id: daysInsert[dayIdx].id,
+                        typ: activity.typ,
+                        titel: activity.titel,
+                        dauer_geschätzt: activity.dauer_geschätzt || null,
+                        adresse: activity.adresse || null,
+                        beginn_uhrzeit: activity.beginn_uhrzeit || null,
+                        reihenfolge: actIdx
+                      })
+                    })
+                  }
+                })
+                if (activitiesToInsert.length > 0) {
+                  const { error: activitiesError } = await supabase
+                    .from('activities')
+                    .insert(activitiesToInsert)
+                  if (activitiesError) throw activitiesError
+                }
+              }
+
+              // Übernachtungen erstellen
+              if (tripData.days.some(d => d.accommodations)) {
+                const accommodationsToInsert = []
+                tripData.days.forEach((day, dayIdx) => {
+                  if (day.accommodations && Array.isArray(day.accommodations)) {
+                    day.accommodations.forEach(acc => {
+                      accommodationsToInsert.push({
+                        day_id: daysInsert[dayIdx].id,
+                        name: acc.name,
+                        typ: acc.typ || null,
+                        kosten: acc.kosten || null,
+                        adresse: acc.adresse
+                      })
+                    })
+                  }
+                })
+                if (accommodationsToInsert.length > 0) {
+                  const { error: accommodationsError } = await supabase
+                    .from('accommodations')
+                    .insert(accommodationsToInsert)
+                  if (accommodationsError) throw accommodationsError
+                }
+              }
+
+              setDuplicateDialog(null)
+              setShowImportModal(false)
+              setImportJson('')
+              await loadTrips()
+            } catch (err) {
+              console.error('Replace Error:', err)
+              setImportError(err.message || 'Fehler beim Ersetzen')
+            }
+          },
+          onNewPlanning: async () => {
+            try {
+              // INSERT: Neue Planung mit gleichem Titel speichern
+              const { data: tripInsert, error: tripError } = await supabase
+                .from('trips')
+                .insert([{
+                  titel: tripData.titel,
+                  start_datum: tripData.start_datum,
+                  end_datum: tripData.end_datum,
+                  status: 'geplant',
+                  standard_schwerpunkte: tripData.schwerpunkte || []
+                }])
+                .select()
+
+              if (tripError) throw tripError
+              const newTripId = tripInsert[0].id
+
+              // Tage erstellen
+              const daysToInsert = tripData.days.map(day => ({
+                trip_id: newTripId,
+                datum: day.datum,
+                start_adresse: day.start_adresse || null,
+                ziel_adresse: day.ziel_adresse,
+                strecke_km: day.strecke_km || null,
+                fahrzeit_geschätzt: day.fahrzeit_geschätzt || null,
+                schwerpunkte: day.schwerpunkte || []
+              }))
+
+              const { data: daysInsert, error: daysError } = await supabase
+                .from('days')
+                .insert(daysToInsert)
+                .select()
+
+              if (daysError) throw daysError
+
+              // Aktivitäten erstellen
+              if (tripData.days.some(d => d.activities)) {
+                const activitiesToInsert = []
+                tripData.days.forEach((day, dayIdx) => {
+                  if (day.activities && Array.isArray(day.activities)) {
+                    day.activities.forEach((activity, actIdx) => {
+                      activitiesToInsert.push({
+                        day_id: daysInsert[dayIdx].id,
+                        typ: activity.typ,
+                        titel: activity.titel,
+                        dauer_geschätzt: activity.dauer_geschätzt || null,
+                        adresse: activity.adresse || null,
+                        beginn_uhrzeit: activity.beginn_uhrzeit || null,
+                        reihenfolge: actIdx
+                      })
+                    })
+                  }
+                })
+                if (activitiesToInsert.length > 0) {
+                  const { error: activitiesError } = await supabase
+                    .from('activities')
+                    .insert(activitiesToInsert)
+                  if (activitiesError) throw activitiesError
+                }
+              }
+
+              // Übernachtungen erstellen
+              if (tripData.days.some(d => d.accommodations)) {
+                const accommodationsToInsert = []
+                tripData.days.forEach((day, dayIdx) => {
+                  if (day.accommodations && Array.isArray(day.accommodations)) {
+                    day.accommodations.forEach(acc => {
+                      accommodationsToInsert.push({
+                        day_id: daysInsert[dayIdx].id,
+                        name: acc.name,
+                        typ: acc.typ || null,
+                        kosten: acc.kosten || null,
+                        adresse: acc.adresse
+                      })
+                    })
+                  }
+                })
+                if (accommodationsToInsert.length > 0) {
+                  const { error: accommodationsError } = await supabase
+                    .from('accommodations')
+                    .insert(accommodationsToInsert)
+                  if (accommodationsError) throw accommodationsError
+                }
+              }
+
+              setDuplicateDialog(null)
+              setShowImportModal(false)
+              setImportJson('')
+              await loadTrips()
+            } catch (err) {
+              console.error('New Planning Error:', err)
+              setImportError(err.message || 'Fehler beim Speichern')
+            }
+          }
+        })
+
+        // Return früh, damit der Rest nicht ausgeführt wird
+        return
+      } else {
+        // Keine Duplikat: Normaler INSERT
+        const { data: tripInsert, error: tripError } = await supabase
+          .from('trips')
+          .insert([{
+            titel: tripData.titel,
+            start_datum: tripData.start_datum,
+            end_datum: tripData.end_datum,
+            status: 'geplant',
+            standard_schwerpunkte: tripData.schwerpunkte || []
+          }])
+          .select()
+
+        if (tripError) throw tripError
+        tripId = tripInsert[0].id
+      }
 
       // Tage erstellen
       const daysToInsert = tripData.days.map(day => ({
@@ -438,12 +667,8 @@ export default function TripListScreen() {
           justifyContent: 'center',
           zIndex: 1000
         }}>
-          <div className="card" style={{ borderLeft: '4px solid #28a745', maxWidth: '500px', width: '90%', maxHeight: '80vh', overflow: 'auto' }}>
-            <h3 className="section-title">📥 Reise aus JSON importieren</h3>
-
-            <p style={{ fontSize: '13px', color: '#666', marginBottom: '12px' }}>
-              Wähle die JSON-Datei von Claude Desktop:
-            </p>
+          <div className="card" style={{ borderLeft: '4px solid #C79A2B', maxWidth: '500px', width: '90%', maxHeight: '80vh', overflow: 'auto' }}>
+            <h3 className="section-title" style={{ marginBottom: '16px' }}>📥 Reise importieren</h3>
 
             <input
               type="file"
@@ -452,7 +677,7 @@ export default function TripListScreen() {
               style={{
                 width: '100%',
                 padding: '12px',
-                marginBottom: '12px',
+                marginBottom: '16px',
                 borderRadius: '4px',
                 border: '1px solid #ddd',
                 fontSize: '14px'
@@ -465,9 +690,241 @@ export default function TripListScreen() {
               </p>
             )}
 
-            <button className="btn-danger" onClick={() => { setShowImportModal(false); setImportJson(''); setImportError(''); }} style={{ width: '100%' }}>
+            <button
+              onClick={() => { setShowImportModal(false); setImportJson(''); setImportError(''); }}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                backgroundColor: '#f44336',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                minHeight: '44px',
+                transition: 'background 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#da190b'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#f44336'}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
               Abbrechen
             </button>
+          </div>
+        </div>
+      )}
+
+      {duplicateDialog && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1001
+        }}>
+          <div className="card" style={{ borderLeft: '4px solid #C79A2B', maxWidth: '500px', width: '90%' }}>
+            <h3 className="section-title">⚠️ Reise existiert bereits</h3>
+
+            <p style={{ fontSize: '14px', marginBottom: '16px', color: '#333' }}>
+              <strong>"{duplicateDialog.titel}"</strong><br/>
+              <span style={{ fontSize: '13px', color: '#666' }}>Was möchtest du tun?</span>
+            </p>
+
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              flexDirection: window.innerWidth < 768 ? 'column' : 'row'
+            }}>
+              <button
+                onClick={duplicateDialog.onReplace}
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  backgroundColor: '#0B4F6C',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  minHeight: '44px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#063d52'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#0B4F6C'}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Ersetzen
+              </button>
+
+              <button
+                onClick={duplicateDialog.onNewPlanning}
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  backgroundColor: '#C79A2B',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  minHeight: '44px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#B8891F'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#C79A2B'}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Neue Planung
+              </button>
+
+              <button
+                onClick={() => setDuplicateDialog(null)}
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  minHeight: '44px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#da190b'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#f44336'}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteDialog && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1001
+        }}>
+          <div className="card" style={{ borderLeft: '4px solid #f44336', maxWidth: '500px', width: '90%' }}>
+            <h3 className="section-title">⚠️ Reise löschen</h3>
+
+            <p style={{ fontSize: '14px', marginBottom: '16px', color: '#333' }}>
+              <strong>"{deleteDialog.titel}"</strong><br/>
+              <span style={{ fontSize: '13px', color: '#666' }}>Das löscht auch alle Tage, Aktivitäten und Übernachtungen. Diese Aktion kann nicht rückgängig gemacht werden.</span>
+            </p>
+
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              flexDirection: window.innerWidth < 768 ? 'column' : 'row'
+            }}>
+              <button
+                onClick={deleteDialog.onConfirm}
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  minHeight: '44px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#da190b'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#f44336'}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+                Löschen
+              </button>
+
+              <button
+                onClick={() => setDeleteDialog(null)}
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  backgroundColor: '#E8E8E8',
+                  color: '#333',
+                  border: 'none',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  minHeight: '44px',
+                  transition: 'background 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#D0D0D0'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#E8E8E8'}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                Abbrechen
+              </button>
+            </div>
           </div>
         </div>
       )}
