@@ -82,6 +82,14 @@ export default function DaysOverviewScreen() {
     })
   }
 
+  const handleOpenInMaps = () => {
+    if (days.length === 0) return
+    const waypoints = days.slice(0, -1).map(d => encodeURIComponent(d.ziel_adresse || '')).join('|')
+    const destination = encodeURIComponent(days[days.length - 1].ziel_adresse || '')
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&waypoints=${waypoints}&destination=${destination}`
+    window.open(mapsUrl, '_blank')
+  }
+
   if (loading) return <div style={{ padding: '20px' }}>Lädt...</div>
   if (error) return <div style={{ padding: '20px', color: 'red' }}>Fehler: {error}</div>
   if (!trip) return <div style={{ padding: '20px' }}>Reise nicht gefunden</div>
@@ -93,7 +101,30 @@ export default function DaysOverviewScreen() {
       <h1 style={{ color: '#0B4F6C' }}>{trip.titel}</h1>
 
       <div className="card" style={{ borderLeft: '4px solid #0B4F6C', marginBottom: '20px' }}>
-        <h3 className="section-title">📊 Fortschritt</h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <h3 className="section-title">📊 Fortschritt</h3>
+          <button
+            onClick={handleOpenInMaps}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: '500',
+              background: '#0B4F6C',
+              color: 'white',
+              minHeight: '44px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.2s'
+            }}
+            title="Alle Tage in Google Maps anzeigen"
+          >
+            🗺️ Maps
+          </button>
+        </div>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
           <strong>Tag {progress.current} von {progress.total}</strong>
         </p>
