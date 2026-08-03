@@ -30,7 +30,11 @@ export default function DayDetailScreen() {
 
       // Lade alle Tage der Trip für Navigation
       if (dayData?.trip_id) {
-        const { data: daysData } = await supabase.from('days').select('*').eq('trip_id', dayData.trip_id).order('datum')
+        const { data: daysData, error: daysError } = await supabase.from('days').select('*').eq('trip_id', dayData.trip_id).order('datum', { ascending: true })
+        if (daysError) {
+          console.warn('Fehler beim Laden der Tage:', daysError)
+        }
+        console.log('Geladene Tage:', daysData, 'Aktuelle dayId:', dayId, 'Trip-ID:', dayData.trip_id)
         setAllDays(daysData || [])
       }
 
@@ -144,9 +148,9 @@ export default function DayDetailScreen() {
       <AppHeader />
       <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
         <button className="back-btn" onClick={() => window.history.back()}>← Zurück</button>
-        {allDays.length > 0 && allDays.findIndex(d => d.id === dayId) < allDays.length - 1 && (
+        {allDays.length > 0 && allDays.findIndex(d => d.id === dayId) < allDays.length - 1 ? (
           <button className="back-btn" onClick={handleNextDay}>Tag →</button>
-        )}
+        ) : null}
       </div>
       <h1 style={{ color: '#0B4F6C' }}>{new Date(day.datum).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</h1>
 
