@@ -164,7 +164,7 @@ export default function DayDetailScreen() {
         <button className="back-btn" onClick={handleBackToTrip}>← Zurück</button>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           {allDays.length > 0 && allDays.findIndex(d => d.id === dayId) > 0 ? (
-            <button className="back-btn" onClick={handlePreviousDay}>Tag ←</button>
+            <button className="back-btn" onClick={handlePreviousDay}>← Tag</button>
           ) : null}
           {allDays.length > 0 && allDays.findIndex(d => d.id === dayId) < allDays.length - 1 ? (
             <button className="back-btn" onClick={handleNextDay}>Tag →</button>
