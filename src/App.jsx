@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import TripListScreen from './screens/TripListScreen'
 import DaysOverviewScreen from './screens/DaysOverviewScreen'
 import DayDetailScreen from './screens/DayDetailScreen'
+import DashboardScreen from './screens/DashboardScreen'
 
 export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -13,6 +14,7 @@ export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/dashboard" element={<DashboardScreen />} />
         <Route path="/" element={<TripListScreen />} />
         <Route path="/trip/:tripId" element={<DaysOverviewScreen />} />
         <Route path="/day/:dayId" element={<DayDetailScreen />} />
