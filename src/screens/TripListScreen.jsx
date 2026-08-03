@@ -291,8 +291,8 @@ export default function TripListScreen() {
             day.accommodations.forEach(acc => {
               accommodationsToInsert.push({
                 day_id: daysInsert[dayIdx].id,
-                name: `${acc.name}${acc.typ ? ` (${acc.typ})` : ''}`,
-                typ: 'günstiger Stellplatz',
+                name: acc.name,
+                typ: acc.typ || null,
                 kosten: acc.kosten || null,
                 adresse: acc.adresse
               })
