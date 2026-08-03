@@ -84,8 +84,9 @@ export default function DaysOverviewScreen() {
 
   const handleOpenInMaps = () => {
     if (days.length === 0) return
-    const waypoints = days.slice(0, -1).map(d => encodeURIComponent(d.ziel_adresse || '')).join('|')
-    const destination = encodeURIComponent(days[days.length - 1].ziel_adresse || '')
+    const waypoints = days.slice(0, -1).map(d => encodeURIComponent(d.ziel_adresse || d.start_adresse || '')).join('|')
+    const lastDay = days[days.length - 1]
+    const destination = encodeURIComponent(lastDay.ziel_adresse || lastDay.start_adresse || '')
     const mapsUrl = `https://www.google.com/maps/dir/?api=1&waypoints=${waypoints}&destination=${destination}`
     window.open(mapsUrl, '_blank')
   }
