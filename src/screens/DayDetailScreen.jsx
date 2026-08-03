@@ -110,6 +110,14 @@ export default function DayDetailScreen() {
     }
   }
 
+  const handleOpenDayInMaps = () => {
+    if (!day) return
+    const origin = encodeURIComponent(day.start_adresse || '')
+    const destination = encodeURIComponent(day.ziel_adresse || day.start_adresse || '')
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`
+    window.open(mapsUrl, '_blank')
+  }
+
   const handleDragEnd = async (result) => {
     const { source, destination, draggableId } = result
     if (!destination) return
@@ -193,6 +201,7 @@ export default function DayDetailScreen() {
               {day.strecke_km && <p style={{ margin: 0 }}><strong>Strecke:</strong> {day.strecke_km} km</p>}
             </div>
             <div style={{ display: 'flex', gap: '4px' }}>
+              <button onClick={handleOpenDayInMaps} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto', backgroundColor: '#0B4F6C', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }} title="In Google Maps anzeigen">🗺️</button>
               <button className="btn-gold" onClick={() => { setEditingId(`day_${dayId}`); setEditForm(day); }} style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}>✎</button>
             </div>
           </div>

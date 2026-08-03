@@ -82,7 +82,7 @@ export default function DaysOverviewScreen() {
     })
   }
 
-  const handleOpenInMaps = async () => {
+  const handleOpenInMaps = () => {
     if (days.length === 0) return
 
     // Start: Custom oder erster Tag
@@ -104,28 +104,6 @@ export default function DaysOverviewScreen() {
     window.open(mapsUrl, '_blank')
   }
 
-  const handleOpenInMapsWithMode = async () => {
-    if (days.length === 0) return
-
-    // Reload trip data to get latest maps_mode
-    const { data: freshTrip } = await supabase.from('trips').select('*').eq('id', trip.id).single()
-
-    // Start: Custom oder erster Tag
-    const origin = encodeURIComponent(freshTrip.maps_origin || days[0]?.start_adresse || '')
-
-    // End: Custom oder letzter Tag
-    const lastDay = days[days.length - 1]
-    const destination = encodeURIComponent(freshTrip.maps_destination || lastDay?.ziel_adresse || lastDay?.start_adresse || '')
-
-    // Mode: Custom oder transit (default) - NO WAYPOINTS with mode
-    const mode = freshTrip.maps_mode || 'transit'
-
-    // Build URL with only origin and destination (mode works better without waypoints)
-    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&tmode=${mode}`
-
-    window.open(mapsUrl, '_blank')
-  }
-
   if (loading) return <div style={{ padding: '20px' }}>Lädt...</div>
   if (error) return <div style={{ padding: '20px', color: 'red' }}>Fehler: {error}</div>
   if (!trip) return <div style={{ padding: '20px' }}>Reise nicht gefunden</div>
@@ -139,50 +117,27 @@ export default function DaysOverviewScreen() {
       <div className="card" style={{ borderLeft: '4px solid #0B4F6C', marginBottom: '20px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
           <h3 className="section-title">📊 Fortschritt</h3>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              onClick={handleOpenInMaps}
-              style={{
-                padding: '8px 14px',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '13px',
-                fontWeight: '500',
-                background: '#0B4F6C',
-                color: 'white',
-                minHeight: '44px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'background 0.2s'
-              }}
-              title="Komplette Route mit allen Tagen"
-            >
-              🗺️ Route
-            </button>
-            <button
-              onClick={handleOpenInMapsWithMode}
-              style={{
-                padding: '8px 14px',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '13px',
-                fontWeight: '500',
-                background: '#C79A2B',
-                color: 'white',
-                minHeight: '44px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'background 0.2s'
-              }}
-              title="Start zu End mit gewähltem Verkehrsmittel"
-            >
-              🚴 Verkehrsmittel
-            </button>
-          </div>
+          <button
+            onClick={handleOpenInMaps}
+            style={{
+              padding: '8px 14px',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: '500',
+              background: '#0B4F6C',
+              color: 'white',
+              minHeight: '44px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.2s'
+            }}
+            title="Komplette Route in Google Maps anzeigen"
+          >
+            🗺️ Maps
+          </button>
         </div>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
           <strong>Tag {progress.current} von {progress.total}</strong>

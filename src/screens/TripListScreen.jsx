@@ -114,6 +114,8 @@ export default function TripListScreen() {
 
   const handleSave = async (tripId) => {
     try {
+      console.log('Speichere editForm:', editForm)
+      console.log('maps_mode Wert:', editForm.maps_mode)
       await supabase.from('trips').update(editForm).eq('id', tripId)
       setEditingId(null)
       await loadTrips()
@@ -496,16 +498,6 @@ export default function TripListScreen() {
                 placeholder="End-Adresse (z.B. Fisterra)"
                 style={{ width: '100%', padding: '12px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '16px' }}
               />
-              <select
-                value={editForm.maps_mode || 'transit'}
-                onChange={(e) => setEditForm({...editForm, maps_mode: e.target.value})}
-                style={{ width: '100%', padding: '12px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '16px' }}
-              >
-                <option value="transit">Öffentliche Verkehrsmittel</option>
-                <option value="driving">Auto</option>
-                <option value="walking">Zu Fuß</option>
-                <option value="bicycling">Fahrrad</option>
-              </select>
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button onClick={() => handleSave(trip.id)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#0B4F6C', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><SaveIcon size={20} /></button>
                 <button onClick={() => setEditingId(null)} style={{ width: '32px', height: '32px', padding: '0', backgroundColor: '#dc2626', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}><CancelIcon size={20} /></button>
