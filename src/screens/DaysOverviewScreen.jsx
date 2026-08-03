@@ -84,10 +84,25 @@ export default function DaysOverviewScreen() {
 
   const handleOpenInMaps = () => {
     if (days.length === 0) return
-    const waypoints = days.slice(0, -1).map(d => encodeURIComponent(d.ziel_adresse || d.start_adresse || '')).join('|')
+
+    // Start: Custom oder erster Tag
+    const origin = encodeURIComponent(trip.maps_origin || days[0]?.start_adresse || '')
+
+    // End: Custom oder letzter Tag
     const lastDay = days[days.length - 1]
-    const destination = encodeURIComponent(lastDay.ziel_adresse || lastDay.start_adresse || '')
-    const mapsUrl = `https://www.google.com/maps/dir/?api=1&waypoints=${waypoints}&destination=${destination}`
+    const destination = encodeURIComponent(trip.maps_destination || lastDay?.ziel_adresse || lastDay?.start_adresse || '')
+
+    // Waypoints: Alle Tage außer Start und End
+    const waypoints = days.slice(1, -1)
+      .map(d => encodeURIComponent(d.ziel_adresse || d.start_adresse || ''))
+      .join('|')
+
+    // Mode: Custom oder transit (default)
+    const mode = trip.maps_mode || 'transit'
+
+    // Build URL
+    const waypointsParam = waypoints ? `&waypoints=${waypoints}` : ''
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsParam}&mode=${mode}`
     window.open(mapsUrl, '_blank')
   }
 
