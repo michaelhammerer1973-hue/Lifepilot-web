@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
 import { supabase } from '../App'
 import AppHeader from '../components/AppHeader'
@@ -9,7 +9,9 @@ import CancelIcon from '../components/CancelIcon'
 
 export default function DayDetailScreen() {
   const { dayId } = useParams()
+  const navigate = useNavigate()
   const [day, setDay] = useState(null)
+  const [allDays, setAllDays] = useState([])
   const [activities, setActivities] = useState([])
   const [accommodations, setAccommodations] = useState([])
   const [loading, setLoading] = useState(true)
@@ -25,6 +27,12 @@ export default function DayDetailScreen() {
       // Lade Day
       const { data: dayData } = await supabase.from('days').select('*').eq('id', dayId).single()
       setDay(dayData || null)
+
+      // Lade alle Tage der Trip für Navigation
+      if (dayData?.trip_id) {
+        const { data: daysData } = await supabase.from('days').select('*').eq('trip_id', dayData.trip_id).order('datum')
+        setAllDays(daysData || [])
+      }
 
       // Lade Activities
       const { data: activitiesData } = await supabase.from('activities').select('*').eq('day_id', dayId).order('reihenfolge')
@@ -74,6 +82,14 @@ export default function DayDetailScreen() {
 
   const getMapsLink = (address) => {
     return `https://www.google.com/maps/search/${encodeURIComponent(address)}`
+  }
+
+  const handleNextDay = () => {
+    const currentIndex = allDays.findIndex(d => d.id === dayId)
+    if (currentIndex >= 0 && currentIndex < allDays.length - 1) {
+      const nextDay = allDays[currentIndex + 1]
+      navigate(`/day/${nextDay.id}`)
+    }
   }
 
   const handleDragEnd = async (result) => {
@@ -126,7 +142,12 @@ export default function DayDetailScreen() {
   return (
     <div className="container">
       <AppHeader />
-      <button className="back-btn" onClick={() => window.history.back()}>← Zurück</button>
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
+        <button className="back-btn" onClick={() => window.history.back()}>← Zurück</button>
+        {allDays.length > 0 && allDays.findIndex(d => d.id === dayId) < allDays.length - 1 && (
+          <button className="back-btn" onClick={handleNextDay}>Tag →</button>
+        )}
+      </div>
       <h1 style={{ color: '#0B4F6C' }}>{new Date(day.datum).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</h1>
 
       <div className="card" style={{ borderLeft: '4px solid #0B4F6C' }}>
