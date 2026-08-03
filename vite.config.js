@@ -8,6 +8,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['pwa-192x192.png', 'pwa-512x512.png'],
+      workbox: {
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024 // 3MB
+      },
       manifest: {
         name: 'LifePilot',
         short_name: 'LifePilot',
