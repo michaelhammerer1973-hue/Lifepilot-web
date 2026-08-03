@@ -82,15 +82,18 @@ export default function DaysOverviewScreen() {
     })
   }
 
-  const handleOpenInMaps = () => {
+  const handleOpenInMaps = async () => {
     if (days.length === 0) return
 
+    // Reload trip data to get latest maps_mode
+    const { data: freshTrip } = await supabase.from('trips').select('*').eq('id', trip.id).single()
+
     // Start: Custom oder erster Tag
-    const origin = encodeURIComponent(trip.maps_origin || days[0]?.start_adresse || '')
+    const origin = encodeURIComponent(freshTrip.maps_origin || days[0]?.start_adresse || '')
 
     // End: Custom oder letzter Tag
     const lastDay = days[days.length - 1]
-    const destination = encodeURIComponent(trip.maps_destination || lastDay?.ziel_adresse || lastDay?.start_adresse || '')
+    const destination = encodeURIComponent(freshTrip.maps_destination || lastDay?.ziel_adresse || lastDay?.start_adresse || '')
 
     // Waypoints: Alle Tage außer Start und End
     const waypoints = days.slice(1, -1)
@@ -98,11 +101,14 @@ export default function DaysOverviewScreen() {
       .join('|')
 
     // Mode: Custom oder transit (default)
-    const mode = trip.maps_mode || 'transit'
+    const mode = freshTrip.maps_mode || 'transit'
 
     // Build URL
     const waypointsParam = waypoints ? `&waypoints=${waypoints}` : ''
     const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsParam}&mode=${mode}`
+
+    console.log('Maps URL:', mapsUrl)
+    console.log('Mode:', mode, 'maps_mode:', freshTrip.maps_mode)
     window.open(mapsUrl, '_blank')
   }
 
