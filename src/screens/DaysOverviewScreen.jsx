@@ -86,7 +86,14 @@ export default function DaysOverviewScreen() {
     if (days.length === 0) return
 
     // Reload trip data to get latest maps_mode
-    const { data: freshTrip } = await supabase.from('trips').select('*').eq('id', trip.id).single()
+    const { data: freshTrip, error } = await supabase.from('trips').select('*').eq('id', trip.id).single()
+
+    if (error) {
+      alert('Fehler beim Laden der Reise: ' + error.message)
+      return
+    }
+
+    alert('freshTrip.maps_mode: ' + freshTrip.maps_mode)
 
     // Start: Custom oder erster Tag
     const origin = encodeURIComponent(freshTrip.maps_origin || days[0]?.start_adresse || '')
@@ -105,7 +112,8 @@ export default function DaysOverviewScreen() {
 
     // Build URL
     const waypointsParam = waypoints ? `&waypoints=${waypoints}` : ''
-    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsParam}&mode=${mode}`
+    // Try tmode instead of mode (some users report this works better)
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypointsParam}&tmode=${mode}`
 
     console.log('Maps URL:', mapsUrl)
     console.log('Mode:', mode, 'maps_mode:', freshTrip.maps_mode)
