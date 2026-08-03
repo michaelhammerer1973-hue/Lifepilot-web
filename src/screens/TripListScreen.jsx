@@ -39,18 +39,30 @@ export default function TripListScreen() {
         tripsData = []
       }
 
-      // Automatisch auf "laufend" setzen, wenn Reise-Startdatum erreicht
+      // Automatisch Status aktualisieren basierend auf Daten
       const today = new Date().toISOString().split('T')[0]
-      const tripsToUpdate = tripsData.filter(trip =>
+
+      // Auf "archiviert" setzen, wenn Reise vorbei ist
+      const tripsToArchive = tripsData.filter(trip =>
+        trip.status !== 'archiviert' && trip.end_datum < today
+      )
+
+      // Auf "laufend" setzen, wenn Reise-Startdatum erreicht
+      const tripsToStart = tripsData.filter(trip =>
         trip.status === 'geplant' && trip.start_datum <= today
       )
 
-      if (tripsToUpdate.length > 0) {
-        await Promise.all(
-          tripsToUpdate.map(trip =>
-            supabase.from('trips').update({ status: 'laufend' }).eq('id', trip.id)
-          )
+      const updatePromises = [
+        ...tripsToArchive.map(trip =>
+          supabase.from('trips').update({ status: 'archiviert' }).eq('id', trip.id)
+        ),
+        ...tripsToStart.map(trip =>
+          supabase.from('trips').update({ status: 'laufend' }).eq('id', trip.id)
         )
+      ]
+
+      if (updatePromises.length > 0) {
+        await Promise.all(updatePromises)
         // Nach Update erneut laden
         const { data: updatedData } = await supabase.from('trips').select('*')
         setAllTrips(updatedData || tripsData)
@@ -107,35 +119,6 @@ export default function TripListScreen() {
       await loadTrips()
     } catch (err) {
       console.error('Fehler beim Speichern:', err)
-    }
-  }
-
-  const handleStatusChange = async (tripId, currentStatus) => {
-    const newStatus = currentStatus === 'geplant' ? 'archiviert' : 'geplant'
-    try {
-      console.log(`Status ändern: Trip ${tripId} von ${currentStatus} zu ${newStatus}`)
-      const { data, error } = await supabase
-        .from('trips')
-        .update({ status: newStatus })
-        .eq('id', tripId)
-        .select()
-
-      if (error) {
-        console.error('Supabase Fehler:', error)
-        const updatedTrips = allTrips.map(t =>
-          t.id === tripId ? { ...t, status: newStatus } : t
-        )
-        setAllTrips(updatedTrips)
-      } else {
-        console.log('Update erfolgreich:', data)
-        await loadTrips()
-      }
-    } catch (err) {
-      console.error('Fehler beim Statusändern:', err)
-      const updatedTrips = allTrips.map(t =>
-        t.id === tripId ? { ...t, status: newStatus } : t
-      )
-      setAllTrips(updatedTrips)
     }
   }
 
@@ -513,15 +496,6 @@ export default function TripListScreen() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <h2 style={{ margin: 0, flex: 1 }}>{trip.titel}</h2>
                 <div style={{ display: 'flex', gap: '4px', marginLeft: '8px' }} onClick={(e) => e.stopPropagation()}>
-                  <button
-                    type="button"
-                    className="btn-gold"
-                    onClick={(e) => { e.stopPropagation(); handleStatusChange(trip.id, trip.status); }}
-                    style={{ width: '32px', height: '32px', padding: '0', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'auto' }}
-                    title={trip.status === 'geplant' ? 'Als archiviert markieren' : 'Als geplant markieren'}
-                  >
-                    {trip.status === 'geplant' ? '☐' : '☑'}
-                  </button>
                   <button
                     type="button"
                     className="btn-gold"
