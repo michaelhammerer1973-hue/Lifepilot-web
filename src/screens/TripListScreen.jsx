@@ -552,7 +552,18 @@ export default function TripListScreen() {
                   ))}
                 </div>
               )}
-              <span className={`badge ${getStatusBadge(trip.status)}`} style={{ marginTop: '8px', display: 'inline-block' }}>
+              <span
+                className={`badge ${getStatusBadge(trip.status)}`}
+                style={{
+                  marginTop: '8px',
+                  display: 'inline-block',
+                  ...(trip.status === 'laufend' && {
+                    backgroundColor: '#0B4F6C',
+                    color: 'white',
+                    border: '2px solid #C79A2B'
+                  })
+                }}
+              >
                 {trip.status}
               </span>
             </div>

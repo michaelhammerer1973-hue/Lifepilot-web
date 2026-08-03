@@ -115,7 +115,10 @@ export default function DaysOverviewScreen() {
 
       <div className="card" style={{ borderLeft: '4px solid #0B4F6C' }}>
         <h3 className="section-title">📅 Tage</h3>
-        {days.map(day => (
+        {days.map(day => {
+          const today = new Date().toISOString().split('T')[0]
+          const isToday = day.datum === today
+          return (
           <Link
             key={day.id}
             to={`/day/${day.id}`}
@@ -124,19 +127,20 @@ export default function DaysOverviewScreen() {
             <div style={{
               padding: '12px',
               marginBottom: day.id === days[days.length - 1].id ? 0 : '8px',
-              backgroundColor: '#F5F7FA',
+              backgroundColor: isToday ? '#0B4F6C' : '#F5F7FA',
               borderRadius: '6px',
-              borderLeft: '4px solid #0B4F6C',
+              borderLeft: isToday ? '4px solid #C79A2B' : '4px solid #0B4F6C',
+              border: isToday ? '2px solid #C79A2B' : 'none',
               cursor: 'pointer',
               transition: 'all 0.2s'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E8F0F5'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#F5F7FA'}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isToday ? '#0B4F6C' : '#E8F0F5'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = isToday ? '#0B4F6C' : '#F5F7FA'}
             >
               <div style={{
                 display: 'inline-block',
                 padding: '4px 8px',
-                backgroundColor: '#0B4F6C',
+                backgroundColor: isToday ? '#C79A2B' : '#0B4F6C',
                 borderRadius: '4px',
                 marginBottom: '8px',
                 fontSize: '12px',
@@ -147,19 +151,20 @@ export default function DaysOverviewScreen() {
               </div>
 
               {day.ziel_adresse && (
-                <p style={{ margin: '4px 0', color: '#333', fontWeight: 'bold', color: '#0B4F6C' }}>
+                <p style={{ margin: '4px 0', fontWeight: 'bold', color: isToday ? 'white' : '#0B4F6C' }}>
                   📍 {day.ziel_adresse}
                 </p>
               )}
 
               {day.strecke_km && (
-                <p style={{ margin: '0', color: '#666', fontSize: '13px' }}>
+                <p style={{ margin: '0', color: isToday ? '#E8E8E8' : '#666', fontSize: '13px' }}>
                   🛣️ {day.strecke_km} km
                 </p>
               )}
             </div>
           </Link>
-        ))}
+        )
+        })}
       </div>
     </div>
   )
