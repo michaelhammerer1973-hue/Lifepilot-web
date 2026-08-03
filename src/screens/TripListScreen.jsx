@@ -13,7 +13,7 @@ export default function TripListScreen() {
   const [error, setError] = useState(null)
   const [editingId, setEditingId] = useState(null)
   const [editForm, setEditForm] = useState({})
-  const [filter, setFilter] = useState('alle')
+  const [filter, setFilter] = useState('geplant')
   const [searchTerm, setSearchTerm] = useState('')
   const [showImportModal, setShowImportModal] = useState(false)
   const [importJson, setImportJson] = useState('')
@@ -81,7 +81,7 @@ export default function TripListScreen() {
     let trips = [...allTrips]
 
     if (filter === 'geplant') {
-      trips = trips.filter(t => t.status === 'geplant')
+      trips = trips.filter(t => t.status === 'geplant' || t.status === 'laufend')
     } else if (filter === 'archiviert') {
       trips = trips.filter(t => t.status === 'archiviert')
     }
