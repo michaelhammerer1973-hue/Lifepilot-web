@@ -105,7 +105,7 @@ export default function BurgerMenu() {
                 </Link>
 
                 <Link
-                  to="/"
+                  to="/trips"
                   onClick={() => setOpen(false)}
                   style={{
                     display: 'flex',

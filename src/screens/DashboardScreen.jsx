@@ -329,7 +329,7 @@ export default function DashboardScreen() {
             zIndex: '10'
           }}>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/trips')}
             style={{
               background: '#FFF4E6',
               border: '2px solid #C79A2B',
