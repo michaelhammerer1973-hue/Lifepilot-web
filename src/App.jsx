@@ -15,6 +15,7 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<DashboardScreen />} />
+        <Route path="/dashboard" element={<DashboardScreen />} />
         <Route path="/trips" element={<TripListScreen />} />
         <Route path="/trip/:tripId" element={<DaysOverviewScreen />} />
         <Route path="/day/:dayId" element={<DayDetailScreen />} />
