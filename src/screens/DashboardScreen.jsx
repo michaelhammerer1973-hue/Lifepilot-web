@@ -311,7 +311,7 @@ export default function DashboardScreen() {
           <div style={{
             minHeight: '750px',
             position: 'relative',
-            paddingTop: typeof window !== 'undefined' && window.innerWidth < 768 ? '60px' : '100px',
+            paddingTop: typeof window !== 'undefined' && window.innerWidth < 768 ? '40px' : '100px',
             paddingBottom: '24px',
             margin: '0 -16px',
             paddingLeft: '16px',
@@ -433,7 +433,7 @@ export default function DashboardScreen() {
               <div style={{ height: '100%', position: 'relative', zIndex: '1' }}>
                 <Globe
                   ref={globeEl}
-                  width={typeof window !== 'undefined' ? Math.round(window.innerWidth < 768 ? window.innerWidth * 0.85 : window.innerWidth * 0.66) : 600}
+                  width={typeof window !== 'undefined' ? Math.round(window.innerWidth < 768 ? window.innerWidth * 0.90 : window.innerWidth * 0.66) : 600}
                   height={650}
                   backgroundColor="#add8e6"
                   showAtmosphere={true}
