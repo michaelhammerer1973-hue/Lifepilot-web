@@ -14,8 +14,8 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/dashboard" element={<DashboardScreen />} />
-        <Route path="/" element={<TripListScreen />} />
+        <Route path="/" element={<DashboardScreen />} />
+        <Route path="/trips" element={<TripListScreen />} />
         <Route path="/trip/:tripId" element={<DaysOverviewScreen />} />
         <Route path="/day/:dayId" element={<DayDetailScreen />} />
       </Routes>
