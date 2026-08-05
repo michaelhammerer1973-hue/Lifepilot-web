@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Globe from 'react-globe.gl'
 import { Color } from 'three'
 import { supabase } from '../App'
@@ -23,10 +23,19 @@ export default function DashboardScreen() {
   const [showCloseTooltip, setShowCloseTooltip] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(2.5)
 
+  const location = useLocation()
+
   useEffect(() => {
     loadGeoJsonData()
     loadData()
   }, [])
+
+  // Reload data wenn zur Dashboard-Route navigiert wird (z.B. nach Löschen)
+  useEffect(() => {
+    if (location.pathname === '/' || location.pathname === '/dashboard') {
+      loadData()
+    }
+  }, [location.pathname])
 
   useEffect(() => {
     if (toastMessage) {
@@ -423,7 +432,7 @@ export default function DashboardScreen() {
             position: 'absolute',
             left: '16px',
             right: '16px',
-            top: '100px',
+            top: '60px',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
