@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Globe from 'react-globe.gl'
-import { Color } from 'three'
+import { Color, DirectionalLight, AmbientLight } from 'three'
 import { supabase } from '../App'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import BurgerMenu from '../components/BurgerMenu'
 import { getAllPlannedCountries } from '../utils/countryParser'
 import countries from '../data/countries.json'
@@ -11,6 +12,7 @@ import countries from '../data/countries.json'
 export default function DashboardScreen() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const globeEl = useRef()
   const userMenuRef = useRef()
   const [trips, setTrips] = useState([])
@@ -42,6 +44,17 @@ export default function DashboardScreen() {
     loadGeoJsonData()
     loadData()
   }, [])
+
+  // Globus-Hintergrund aktualisieren wenn Theme sich ändert
+  useEffect(() => {
+    if (globeEl.current) {
+      const scene = globeEl.current.scene()
+      if (scene) {
+        const backgroundColor = theme === 'dark' ? 0x1a1a1a : 0xf5f7fa
+        scene.background = new Color(backgroundColor)
+      }
+    }
+  }, [theme])
 
   // Schließe User Menu wenn außerhalb geklickt wird
   useEffect(() => {
@@ -165,6 +178,24 @@ export default function DashboardScreen() {
       const scene = globeEl.current.scene()
       if (scene) {
         scene.background = new Color(0xe8ebed)
+
+        // Entferne alte Lights um Duplikate zu vermeiden
+        const lightsToRemove = scene.children.filter(child => child.isLight)
+        lightsToRemove.forEach(light => scene.remove(light))
+
+        // Ambient Light (stärker für bessere Sichtbarkeit)
+        const ambientLight = new AmbientLight(0xffffff, 0.6)
+        scene.add(ambientLight)
+
+        // Directional Light (Sonne von links oben)
+        const sunLight = new DirectionalLight(0xfdb813, 0.8)
+        sunLight.position.set(2, 1, 1)
+        scene.add(sunLight)
+
+        // Optional: Zweite stärkere Light für Schattenseite (mehr Strahlkraft)
+        const fillLight = new DirectionalLight(0x1e3c72, 0.5)
+        fillLight.position.set(-1, -1, -0.5)
+        scene.add(fillLight)
       }
     }
   }
@@ -304,10 +335,10 @@ export default function DashboardScreen() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#F5F7FA' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
       {/* Welcome Message */}
       <div style={{
-        background: 'linear-gradient(135deg, #0B4F6C 0%, #063d52 100%)',
+        background: `linear-gradient(135deg, var(--color-primary) 0%, ${theme === 'light' ? '#063d52' : '#0a2a38'} 100%)`,
         color: 'white',
         padding: '16px',
         textAlign: 'center',
@@ -319,10 +350,10 @@ export default function DashboardScreen() {
 
       {/* Header */}
       <div style={{
-        background: 'white',
-        borderBottom: '2px solid #0B4F6C',
+        background: 'var(--bg-card)',
+        borderBottom: `2px solid var(--color-primary)`,
         padding: '24px 16px',
-        boxShadow: '0 2px 6px rgba(11, 79, 108, 0.08)'
+        boxShadow: `0 2px 6px var(--shadow-color)`
       }}>
         <div style={{
           width: '100%',
@@ -360,7 +391,7 @@ export default function DashboardScreen() {
                 width: '44px',
                 height: '44px',
                 borderRadius: '22px',
-                backgroundColor: '#0B4F6C',
+                backgroundColor: 'var(--color-primary)',
                 color: 'white',
                 border: 'none',
                 fontSize: '16px',
@@ -382,36 +413,36 @@ export default function DashboardScreen() {
                 top: '100%',
                 right: '0',
                 marginTop: '8px',
-                backgroundColor: 'white',
+                backgroundColor: 'var(--bg-card)',
                 borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                boxShadow: `0 4px 12px var(--shadow-color-hover)`,
                 zIndex: '1000',
                 minWidth: '220px',
                 overflow: 'hidden'
               }}>
                 <div style={{
                   padding: '12px 16px',
-                  borderBottom: '1px solid #f0f0f0'
+                  borderBottom: `1px solid var(--border-light)`
                 }}>
-                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#0B4F6C' }}>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)' }}>
                     👤 Meine Daten
                   </div>
-                  <div style={{ fontSize: '12px', color: '#333', marginTop: '6px', fontWeight: '500' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginTop: '6px', fontWeight: '500' }}>
                     {user?.username}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>
                     {user?.email}
                   </div>
                 </div>
 
                 <div style={{
                   padding: '12px 16px',
-                  borderBottom: '1px solid #f0f0f0'
+                  borderBottom: `1px solid var(--border-light)`
                 }}>
-                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '12px' }}>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)', marginBottom: '12px' }}>
                     ⭐ Mein Abo
                   </div>
-                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '12px', fontWeight: '500' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px', fontWeight: '500' }}>
                     {user?.subscription === 'free' ? '📦 Free Plan' : user?.subscription === 'premium' ? '⭐ Premium Plan' : '🚀 Unlimited Plan'}
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
@@ -420,7 +451,7 @@ export default function DashboardScreen() {
                       style={{
                         flex: 1,
                         padding: '8px 12px',
-                        backgroundColor: '#0B4F6C',
+                        backgroundColor: 'var(--color-primary)',
                         color: 'white',
                         border: 'none',
                         borderRadius: '6px',
@@ -439,8 +470,8 @@ export default function DashboardScreen() {
                       style={{
                         flex: 1,
                         padding: '8px 12px',
-                        backgroundColor: '#f0f0f0',
-                        color: '#0B4F6C',
+                        backgroundColor: 'var(--bg-hover)',
+                        color: 'var(--color-primary)',
                         border: 'none',
                         borderRadius: '6px',
                         fontSize: '12px',
@@ -457,6 +488,27 @@ export default function DashboardScreen() {
                 </div>
 
                 <button
+                  onClick={() => toggleTheme()}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    textAlign: 'left',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: 'var(--text-primary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    borderBottom: `1px solid var(--border-light)`
+                  }}
+                >
+                  {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+                </button>
+
+                <button
                   onClick={handleLogout}
                   style={{
                     width: '100%',
@@ -466,7 +518,7 @@ export default function DashboardScreen() {
                     textAlign: 'left',
                     fontSize: '14px',
                     fontWeight: '600',
-                    color: '#000',
+                    color: 'var(--text-primary)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -488,7 +540,7 @@ export default function DashboardScreen() {
 
       {/* Main Content */}
       <div style={{
-        background: '#e8ebed',
+        background: 'var(--bg-primary)',
         padding: '16px'
       }}>
         <div className="dashboard-content" style={{
@@ -614,7 +666,8 @@ export default function DashboardScreen() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            backgroundColor: '#000000'
           }}>
             {countriesData && countriesData.features && countriesData.features.length > 0 ? (
               <div style={{ height: '100%', position: 'relative', zIndex: '1' }}>
@@ -622,7 +675,7 @@ export default function DashboardScreen() {
                   ref={globeEl}
                   width={typeof window !== 'undefined' ? Math.round(window.innerWidth < 768 ? window.innerWidth * 0.90 : window.innerWidth * 0.66) : 600}
                   height={650}
-                  backgroundColor="#add8e6"
+                  backgroundColor="#000000"
                   showAtmosphere={true}
                   showGraticules={false}
                   polygonsData={countriesData.features}
@@ -638,7 +691,7 @@ export default function DashboardScreen() {
               </div>
             ) : (
               <div style={{
-                color: '#0B4F6C',
+                color: 'var(--color-primary)',
                 fontSize: '16px'
               }}>
                 Globus lädt Daten... 🌍

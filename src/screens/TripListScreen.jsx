@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../App'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import BurgerMenu from '../components/BurgerMenu'
 import TrashIcon from '../components/TrashIcon'
 import SaveIcon from '../components/SaveIcon'
@@ -10,6 +11,7 @@ import CancelIcon from '../components/CancelIcon'
 export default function TripListScreen() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const userMenuRef = useRef()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [allTrips, setAllTrips] = useState([])
@@ -578,13 +580,13 @@ export default function TripListScreen() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#F5F7FA' }}>
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--bg-primary)' }}>
       {/* Header */}
       <div style={{
-        background: 'white',
-        borderBottom: '2px solid #0B4F6C',
+        background: 'var(--bg-card)',
+        borderBottom: `2px solid var(--color-primary)`,
         padding: '24px 16px',
-        boxShadow: '0 2px 6px rgba(11, 79, 108, 0.08)'
+        boxShadow: `0 2px 6px var(--shadow-color)`
       }}>
         <div style={{
           width: '100%',
@@ -710,6 +712,27 @@ export default function TripListScreen() {
                     </button>
                   </div>
                 </div>
+
+                <button
+                  onClick={() => toggleTheme()}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    textAlign: 'left',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#000',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    borderBottom: '1px solid #f0f0f0'
+                  }}
+                >
+                  {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+                </button>
 
                 <button
                   onClick={() => {
