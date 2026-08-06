@@ -46,14 +46,11 @@ export default function LoginScreen() {
         boxShadow: '0 2px 6px rgba(11, 79, 108, 0.08)'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h1 style={{
-            fontSize: '24px',
-            fontWeight: '700',
-            color: '#0B4F6C',
-            margin: '0 0 8px 0'
-          }}>
-            LifePilot
-          </h1>
+          <img
+            src="/login-logo.png"
+            alt="LifePilot"
+            style={{ height: '120px', marginBottom: '16px', width: 'auto' }}
+          />
           <p style={{ fontSize: '14px', color: '#90A4AE', margin: '0' }}>Plane dein Abenteuer</p>
         </div>
 
