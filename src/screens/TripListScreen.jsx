@@ -607,7 +607,7 @@ export default function TripListScreen() {
           </Link>
 
           <h1 style={{
-            fontSize: '24px',
+            fontSize: '17px',
             fontWeight: '600',
             color: '#0B4F6C',
             margin: 0
