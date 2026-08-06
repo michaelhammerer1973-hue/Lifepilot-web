@@ -3,13 +3,16 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import Globe from 'react-globe.gl'
 import { Color } from 'three'
 import { supabase } from '../App'
+import { useAuth } from '../context/AuthContext'
 import BurgerMenu from '../components/BurgerMenu'
 import { getAllPlannedCountries } from '../utils/countryParser'
 import countries from '../data/countries.json'
 
 export default function DashboardScreen() {
   const navigate = useNavigate()
+  const { user, signOut } = useAuth()
   const globeEl = useRef()
+  const userMenuRef = useRef()
   const [trips, setTrips] = useState([])
   const [visitedCountries, setVisitedCountries] = useState([])
   const [plannedCountries, setPlannedCountries] = useState([])
@@ -19,16 +22,42 @@ export default function DashboardScreen() {
   const [countryInput, setCountryInput] = useState('')
   const [filteredCountries, setFilteredCountries] = useState([])
   const [toastMessage, setToastMessage] = useState('')
-  const [countryFilter, setCountryFilter] = useState('alle')
+  const [countryFilter, setCountryFilter] = useState('besucht')
   const [showCloseTooltip, setShowCloseTooltip] = useState(false)
   const [zoomLevel, setZoomLevel] = useState(2.5)
+  const [showUserMenu, setShowUserMenu] = useState(false)
 
   const location = useLocation()
+
+  const getUserInitials = () => {
+    return user?.username?.substring(0, 2).toUpperCase() || 'LP'
+  }
+
+  const handleLogout = async () => {
+    await signOut()
+    navigate('/')
+  }
 
   useEffect(() => {
     loadGeoJsonData()
     loadData()
   }, [])
+
+  // Schließe User Menu wenn außerhalb geklickt wird
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false)
+      }
+    }
+
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [showUserMenu])
 
   // Reload data wenn zur Dashboard-Route navigiert wird (z.B. nach Löschen)
   useEffect(() => {
@@ -65,10 +94,16 @@ export default function DashboardScreen() {
     try {
       setLoading(true)
 
-      // Lade Trips mit Days
+      if (!user?.id) {
+        setLoading(false)
+        return
+      }
+
+      // Lade Trips mit Days - nur für diesen Benutzer
       const { data: tripsData } = await supabase
         .from('trips')
         .select('*, days(*)')
+        .eq('user_id', user.id)
 
       setTrips(tripsData || [])
 
@@ -76,10 +111,11 @@ export default function DashboardScreen() {
       const planned = getAllPlannedCountries(tripsData || [])
       setPlannedCountries(planned)
 
-      // Lade besuchte Länder
+      // Lade besuchte Länder - nur für diesen Benutzer
       const { data: visitedData } = await supabase
         .from('visited_countries')
         .select('country_code')
+        .eq('user_id', user.id)
         .eq('user_id', 'user-001')
 
       const visited = visitedData?.map(d => d.country_code) || []
@@ -168,7 +204,7 @@ export default function DashboardScreen() {
         .from('visited_countries')
         .select('id')
         .eq('country_code', countryCode)
-        .eq('user_id', 'user-001')
+        .eq('user_id', user.id)
         .maybeSingle()
 
       if (selectError) {
@@ -184,7 +220,7 @@ export default function DashboardScreen() {
       const { data, error: insertError } = await supabase
         .from('visited_countries')
         .insert({
-          user_id: 'user-001',
+          user_id: user.id,
           country_code: countryCode,
           country_name: countryName,
           visited_date: new Date().toISOString().split('T')[0]
@@ -270,11 +306,23 @@ export default function DashboardScreen() {
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#F5F7FA' }}>
+      {/* Welcome Message */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0B4F6C 0%, #063d52 100%)',
+        color: 'white',
+        padding: '16px',
+        textAlign: 'center',
+        fontSize: '16px',
+        fontWeight: '500'
+      }}>
+        👋 Willkommen zurück, {user?.username}! Was planen wir heute?
+      </div>
+
       {/* Header */}
       <div style={{
         background: 'white',
         borderBottom: '2px solid #0B4F6C',
-        padding: '16px',
+        padding: '24px 16px',
         boxShadow: '0 2px 6px rgba(11, 79, 108, 0.08)'
       }}>
         <div style={{
@@ -284,14 +332,15 @@ export default function DashboardScreen() {
           alignItems: 'center',
           justifyContent: 'center',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'visible',
+          minHeight: '90px'
         }}>
           <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', position: 'absolute', left: '16px' }}>
             <img
               src="/Logo_lifePilot_Dashboard.png"
               alt="LifePilot Dashboard"
               className="dashboard-logo"
-              style={{ width: 'auto' }}
+              style={{ height: '80px', width: 'auto' }}
             />
           </Link>
 
@@ -302,8 +351,138 @@ export default function DashboardScreen() {
             style={{ height: '80px', width: 'auto' }}
           />
 
-          <div style={{ position: 'absolute', right: '16px' }}>
+          <div style={{ position: 'absolute', right: '16px', display: 'flex', gap: '12px', alignItems: 'center' }} ref={userMenuRef}>
             <BurgerMenu />
+
+            {/* Avatar Button */}
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '22px',
+                backgroundColor: '#0B4F6C',
+                color: 'white',
+                border: 'none',
+                fontSize: '16px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative'
+              }}
+            >
+              {getUserInitials()}
+            </button>
+
+            {/* User Menu Dropdown */}
+            {showUserMenu && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                right: '0',
+                marginTop: '8px',
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: '1000',
+                minWidth: '220px',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  padding: '12px 16px',
+                  borderBottom: '1px solid #f0f0f0'
+                }}>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#0B4F6C' }}>
+                    👤 Meine Daten
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#333', marginTop: '6px', fontWeight: '500' }}>
+                    {user?.username}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+                    {user?.email}
+                  </div>
+                </div>
+
+                <div style={{
+                  padding: '12px 16px',
+                  borderBottom: '1px solid #f0f0f0'
+                }}>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '12px' }}>
+                    ⭐ Mein Abo
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '12px', fontWeight: '500' }}>
+                    {user?.subscription === 'free' ? '📦 Free Plan' : user?.subscription === 'premium' ? '⭐ Premium Plan' : '🚀 Unlimited Plan'}
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => {/* TODO: Upgrade Handler */}}
+                      style={{
+                        flex: 1,
+                        padding: '8px 12px',
+                        backgroundColor: '#0B4F6C',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'opacity 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.opacity = '0.8'}
+                      onMouseLeave={(e) => e.target.style.opacity = '1'}
+                    >
+                      Upgrade
+                    </button>
+                    <button
+                      onClick={() => {/* TODO: Cancel Handler */}}
+                      style={{
+                        flex: 1,
+                        padding: '8px 12px',
+                        backgroundColor: '#f0f0f0',
+                        color: '#0B4F6C',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        transition: 'opacity 0.2s'
+                      }}
+                      onMouseEnter={(e) => e.target.style.opacity = '0.8'}
+                      onMouseLeave={(e) => e.target.style.opacity = '1'}
+                    >
+                      Kündigen
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    textAlign: 'left',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#000',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="8" height="18" rx="1" />
+                    <path d="M14 9l4 3-4 3" />
+                    <line x1="14" y1="12" x2="21" y2="12" />
+                  </svg>
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -674,7 +853,7 @@ export default function DashboardScreen() {
               marginBottom: '16px',
               flexWrap: 'wrap'
             }}>
-              {['alle', 'besucht', 'nicht besucht'].map((filter) => (
+              {['besucht', 'nicht besucht', 'alle'].map((filter) => (
                 <button
                   key={filter}
                   onClick={() => setCountryFilter(filter)}
@@ -690,7 +869,7 @@ export default function DashboardScreen() {
                     transition: 'all 0.2s'
                   }}
                 >
-                  {filter === 'alle' ? 'Alle Länder' : filter === 'besucht' ? 'Besucht' : 'Nicht besucht'}
+                  {filter === 'alle' ? 'Alle' : filter === 'besucht' ? 'Besucht' : 'Unentdeckt'}
                 </button>
               ))}
             </div>

@@ -1,0 +1,40 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle dark -->
+  <circle cx="100" cy="100" r="95" fill="none" stroke="#0D3A52" stroke-width="8"/>
+
+  <!-- Inner circle light -->
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#E8E8E8" stroke-width="2"/>
+
+  <!-- Gold circle -->
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#C79A2B" stroke-width="3"/>
+
+  <!-- Compass points (triangles) -->
+  <!-- North -->
+  <polygon points="100,15 95,35 105,35" fill="#C79A2B"/>
+  <!-- South -->
+  <polygon points="100,185 95,165 105,165" fill="#0D3A52"/>
+  <!-- East -->
+  <polygon points="185,100 165,95 165,105" fill="#C79A2B"/>
+  <!-- West -->
+  <polygon points="15,100 35,95 35,105" fill="#0D3A52"/>
+
+  <!-- World map (simplified continents) -->
+  <!-- North America -->
+  <path d="M 70 55 L 75 50 L 78 55 L 76 60 Z" fill="none" stroke="#333" stroke-width="1.5"/>
+  <!-- South America -->
+  <path d="M 72 75 L 78 70 L 80 85 L 75 88 Z" fill="none" stroke="#333" stroke-width="1.5"/>
+  <!-- Europe/Africa -->
+  <path d="M 110 60 L 125 58 L 128 75 L 120 80 L 115 70 Z" fill="none" stroke="#333" stroke-width="1.5"/>
+  <!-- Asia -->
+  <path d="M 135 55 L 150 58 L 148 75 L 130 72 Z" fill="none" stroke="#333" stroke-width="1.5"/>
+
+  <!-- Heartbeat line -->
+  <polyline points="40,100 60,100 65,90 70,110 75,95 80,105 85,100 140,100 150,100"
+            fill="none" stroke="#C79A2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Cardinal marks -->
+  <line x1="100" y1="30" x2="100" y2="35" stroke="#333" stroke-width="1"/>
+  <line x1="100" y1="165" x2="100" y2="170" stroke="#333" stroke-width="1"/>
+  <line x1="30" y1="100" x2="35" y2="100" stroke="#333" stroke-width="1"/>
+  <line x1="165" y1="100" x2="170" y2="100" stroke="#333" stroke-width="1"/>
+</svg>
