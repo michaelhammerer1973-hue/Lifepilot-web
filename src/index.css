@@ -358,6 +358,12 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(11, 79, 108, 0.1);
 }
 
+/* LoginScreen input override - force white background */
+.login-screen input {
+  background-color: #FFFFFF !important;
+  color: #333333 !important;
+}
+
 textarea {
   min-height: 100px;
   resize: vertical;
