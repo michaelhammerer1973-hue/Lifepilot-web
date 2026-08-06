@@ -49,7 +49,7 @@ export default function LoginScreen() {
           <img
             src="/login-logo.png"
             alt="LifePilot"
-            style={{ height: '120px', marginBottom: '16px', width: 'auto' }}
+            style={{ height: '180px', marginBottom: '24px', width: 'auto' }}
           />
           <p style={{ fontSize: '14px', color: '#90A4AE', margin: '0' }}>Plane dein Abenteuer</p>
         </div>
