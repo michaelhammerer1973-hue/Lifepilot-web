@@ -65,17 +65,7 @@ export default function LoginScreen() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={loading}
-                style={{
-                  width: '100%',
-                  padding: '12px 14px',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
-                  fontSize: '16px',
-                  boxSizing: 'border-box',
-                  fontFamily: 'inherit',
-                  color: '#333',
-                  backgroundColor: '#FFFFFF !important'
-                }}
+                style="width: 100%; padding: 12px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; font-family: inherit; color: #333; background-color: #FFFFFF !important;"
               />
             </div>
           )}
@@ -90,17 +80,7 @@ export default function LoginScreen() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
-              style={{
-                width: '100%',
-                padding: '12px 14px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '16px',
-                boxSizing: 'border-box',
-                fontFamily: 'inherit',
-                color: '#333',
-                backgroundColor: '#FFFFFF !important'
-              }}
+              style="width: 100%; padding: 12px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; font-family: inherit; color: #333; background-color: #FFFFFF !important;"
             />
           </div>
 
@@ -115,17 +95,7 @@ export default function LoginScreen() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
-                style={{
-                  width: '100%',
-                  padding: '12px 40px 12px 14px',
-                  border: '1px solid #ddd',
-                  borderRadius: '6px',
-                  fontSize: '16px',
-                  boxSizing: 'border-box',
-                  fontFamily: 'inherit',
-                  color: '#333',
-                  backgroundColor: '#FFFFFF !important'
-                }}
+                style="width: 100%; padding: 12px 40px 12px 14px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; font-family: inherit; color: #333; background-color: #FFFFFF !important;"
               />
               <button
                 type="button"
