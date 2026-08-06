@@ -31,32 +31,31 @@ export default function LoginScreen() {
     <div style={{
       minHeight: '100vh',
       display: 'flex',
-      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#F5F7FA',
+      backgroundColor: '#f5f7fa',
       padding: '16px'
     }}>
       <div style={{
         backgroundColor: 'white',
         borderRadius: '12px',
-        padding: '32px',
-        maxWidth: '400px',
+        padding: '40px',
+        maxWidth: '420px',
         width: '100%',
-        boxShadow: '0 2px 6px rgba(11, 79, 108, 0.08)'
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <img
             src="/login-logo.png"
             alt="LifePilot"
-            style={{ height: '180px', marginBottom: '24px', width: 'auto' }}
+            style={{ height: '140px', marginBottom: '20px', width: 'auto' }}
           />
-          <p style={{ fontSize: '14px', color: '#90A4AE', margin: '0' }}>Plane dein Abenteuer</p>
+          <p style={{ fontSize: '16px', color: '#999', margin: '0', fontWeight: '400' }}>Plane dein Abenteuer</p>
         </div>
 
         <form onSubmit={handleAuth}>
           {isSignup && (
-            <div style={{ marginBottom: '16px' }}>
+            <div style={{ marginBottom: '20px' }}>
               <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '8px' }}>
                 Benutzername
               </label>
@@ -68,58 +67,61 @@ export default function LoginScreen() {
                 disabled={loading}
                 style={{
                   width: '100%',
-                  padding: '12px',
+                  padding: '12px 14px',
                   border: '1px solid #ddd',
                   borderRadius: '6px',
                   fontSize: '16px',
                   boxSizing: 'border-box',
-                  fontFamily: 'inherit'
+                  fontFamily: 'inherit',
+                  color: '#333'
                 }}
               />
             </div>
           )}
 
-          <div style={{ marginBottom: '16px' }}>
+          <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '8px' }}>
               E-Mail oder Benutzername
             </label>
             <input
               type="text"
-              placeholder="deine@email.com oder Benutzername"
+              placeholder="m.hammerer@zahlen-werk.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
               style={{
                 width: '100%',
-                padding: '12px',
+                padding: '12px 14px',
                 border: '1px solid #ddd',
                 borderRadius: '6px',
                 fontSize: '16px',
                 boxSizing: 'border-box',
-                fontFamily: 'inherit'
+                fontFamily: 'inherit',
+                color: '#333'
               }}
             />
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '28px' }}>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '8px' }}>
               Passwort
             </label>
             <div style={{ position: 'relative' }}>
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Passwort"
+                placeholder="••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 style={{
                   width: '100%',
-                  padding: '12px 40px 12px 12px',
+                  padding: '12px 40px 12px 14px',
                   border: '1px solid #ddd',
                   borderRadius: '6px',
                   fontSize: '16px',
                   boxSizing: 'border-box',
-                  fontFamily: 'inherit'
+                  fontFamily: 'inherit',
+                  color: '#333'
                 }}
               />
               <button
@@ -135,10 +137,12 @@ export default function LoginScreen() {
                   border: 'none',
                   fontSize: '18px',
                   cursor: 'pointer',
-                  opacity: loading ? 0.5 : 1
+                  opacity: loading ? 0.5 : 1,
+                  padding: '0',
+                  minHeight: 'auto'
                 }}
               >
-                {showPassword ? '👁️‍🗨️' : '👁️‍🗨️'}
+                {showPassword ? '👁️' : '👁️‍🗨️'}
               </button>
             </div>
           </div>
@@ -147,9 +151,9 @@ export default function LoginScreen() {
             <div style={{
               backgroundColor: '#FFE6E6',
               color: '#C00',
-              padding: '12px',
+              padding: '12px 14px',
               borderRadius: '6px',
-              marginBottom: '16px',
+              marginBottom: '20px',
               fontSize: '14px'
             }}>
               {error}
@@ -161,7 +165,7 @@ export default function LoginScreen() {
             disabled={loading}
             style={{
               width: '100%',
-              padding: '12px',
+              padding: '14px',
               backgroundColor: '#0B4F6C',
               color: 'white',
               border: 'none',
@@ -179,12 +183,10 @@ export default function LoginScreen() {
         </form>
 
         <div style={{
-          marginTop: '24px',
-          textAlign: 'center',
-          borderTop: '1px solid #f0f0f0',
-          paddingTop: '16px'
+          marginTop: '28px',
+          textAlign: 'center'
         }}>
-          <p style={{ color: '#666', fontSize: '14px', marginBottom: '12px' }}>
+          <p style={{ color: '#999', fontSize: '14px', marginBottom: '12px', margin: '0 0 12px 0' }}>
             {isSignup ? 'Du hast bereits ein Konto?' : 'Du hast noch kein Konto?'}
           </p>
           <button
@@ -198,7 +200,9 @@ export default function LoginScreen() {
               fontSize: '14px',
               fontWeight: '600',
               cursor: 'pointer',
-              textDecoration: 'underline'
+              textDecoration: 'underline',
+              padding: '0',
+              minHeight: 'auto'
             }}
           >
             {isSignup ? 'Anmelden' : 'Registrieren'}
