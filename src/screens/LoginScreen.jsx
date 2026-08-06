@@ -74,7 +74,7 @@ export default function LoginScreen() {
                   boxSizing: 'border-box',
                   fontFamily: 'inherit',
                   color: '#333',
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: '#FFFFFF !important'
                 }}
               />
             </div>
@@ -99,7 +99,7 @@ export default function LoginScreen() {
                 boxSizing: 'border-box',
                 fontFamily: 'inherit',
                 color: '#333',
-                backgroundColor: '#FFFFFF'
+                backgroundColor: '#FFFFFF !important'
               }}
             />
           </div>
@@ -124,7 +124,7 @@ export default function LoginScreen() {
                   boxSizing: 'border-box',
                   fontFamily: 'inherit',
                   color: '#333',
-                  backgroundColor: '#FFFFFF'
+                  backgroundColor: '#FFFFFF !important'
                 }}
               />
               <button
