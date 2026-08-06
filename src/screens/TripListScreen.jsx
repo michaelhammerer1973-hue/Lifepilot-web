@@ -1,13 +1,17 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../App'
-import AppHeader from '../components/AppHeader'
+import { useAuth } from '../context/AuthContext'
+import BurgerMenu from '../components/BurgerMenu'
 import TrashIcon from '../components/TrashIcon'
 import SaveIcon from '../components/SaveIcon'
 import CancelIcon from '../components/CancelIcon'
 
 export default function TripListScreen() {
   const navigate = useNavigate()
+  const { user, signOut } = useAuth()
+  const userMenuRef = useRef()
+  const [showUserMenu, setShowUserMenu] = useState(false)
   const [allTrips, setAllTrips] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -25,12 +29,33 @@ export default function TripListScreen() {
     loadTrips()
   }, [])
 
+  // Close User Menu wenn außerhalb geklickt wird
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false)
+      }
+    }
+
+    if (showUserMenu) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [showUserMenu])
+
   const loadTrips = async () => {
     try {
       setLoading(true)
+      if (!user?.id) {
+        setLoading(false)
+        return
+      }
       const { data, error: err } = await supabase
         .from('trips')
         .select('*')
+        .eq('user_id', user.id)
 
       let tripsData = data || []
       if (err) {
@@ -344,6 +369,7 @@ export default function TripListScreen() {
               const { data: tripInsert, error: tripError } = await supabase
                 .from('trips')
                 .insert([{
+                  user_id: user.id,
                   titel: tripData.titel,
                   start_datum: tripData.start_datum,
                   end_datum: tripData.end_datum,
@@ -441,6 +467,7 @@ export default function TripListScreen() {
         const { data: tripInsert, error: tripError } = await supabase
           .from('trips')
           .insert([{
+            user_id: user.id,
             titel: tripData.titel,
             start_datum: tripData.start_datum,
             end_datum: tripData.end_datum,
@@ -550,8 +577,169 @@ export default function TripListScreen() {
   }
 
   return (
-    <div className="container">
-      <AppHeader />
+    <div style={{ minHeight: '100vh', backgroundColor: '#F5F7FA' }}>
+      {/* Header */}
+      <div style={{
+        background: 'white',
+        borderBottom: '2px solid #0B4F6C',
+        padding: '24px 16px',
+        boxShadow: '0 2px 6px rgba(11, 79, 108, 0.08)'
+      }}>
+        <div style={{
+          width: '100%',
+          padding: '0 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          overflow: 'visible',
+          minHeight: '90px'
+        }}>
+          <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', position: 'absolute', left: '16px' }}>
+            <img
+              src="/Logo_lifePilot_Dashboard.png"
+              alt="LifePilot Dashboard"
+              style={{ height: '80px', width: 'auto' }}
+            />
+          </Link>
+
+          <h1 style={{
+            fontSize: '24px',
+            fontWeight: '600',
+            color: '#0B4F6C',
+            margin: 0
+          }}>
+            Deine Reisen
+          </h1>
+
+          <div style={{ position: 'absolute', right: '16px', display: 'flex', gap: '12px', alignItems: 'center' }} ref={userMenuRef}>
+            <BurgerMenu />
+
+            {/* Avatar Button */}
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              style={{
+                width: '44px',
+                height: '44px',
+                borderRadius: '22px',
+                backgroundColor: '#0B4F6C',
+                color: 'white',
+                border: 'none',
+                fontSize: '16px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative'
+              }}
+            >
+              {user?.username ? user.username.substring(0, 2).toUpperCase() : 'LP'}
+            </button>
+
+            {/* User Menu Dropdown */}
+            {showUserMenu && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                right: '0',
+                marginTop: '8px',
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                zIndex: '1000',
+                minWidth: '220px',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  padding: '12px 16px',
+                  borderBottom: '1px solid #f0f0f0'
+                }}>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#0B4F6C' }}>
+                    👤 Meine Daten
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#333', marginTop: '6px', fontWeight: '500' }}>
+                    {user?.username}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
+                    {user?.email}
+                  </div>
+                </div>
+
+                <div style={{
+                  padding: '12px 16px',
+                  borderBottom: '1px solid #f0f0f0'
+                }}>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '12px' }}>
+                    ⭐ Mein Abo
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#666', marginBottom: '12px', fontWeight: '500' }}>
+                    {user?.subscription === 'free' ? '📦 Free Plan' : user?.subscription === 'premium' ? '⭐ Premium Plan' : '🚀 Unlimited Plan'}
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      style={{
+                        flex: 1,
+                        padding: '8px 12px',
+                        backgroundColor: '#0B4F6C',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Upgrade
+                    </button>
+                    <button
+                      style={{
+                        flex: 1,
+                        padding: '8px 12px',
+                        backgroundColor: '#f0f0f0',
+                        color: '#0B4F6C',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Kündigen
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    signOut()
+                    setShowUserMenu(false)
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    backgroundColor: 'transparent',
+                    color: '#C00',
+                    border: 'none',
+                    textAlign: 'left',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  <span>🚪</span>
+                  Abmelden
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="container">
 
       {/* Suchbar */}
       <div className="card" style={{ borderLeft: '4px solid #0B4F6C', marginBottom: '16px' }}>
@@ -1017,6 +1205,7 @@ export default function TripListScreen() {
           )}
         </div>
       ))}
+      </div>
     </div>
   )
 }
