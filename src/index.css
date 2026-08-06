@@ -359,9 +359,12 @@ select:focus {
 }
 
 /* LoginScreen input override - force white background */
-.login-screen input {
+.login-screen input,
+.login-screen input[type="text"],
+.login-screen input[type="password"] {
   background-color: #FFFFFF !important;
   color: #333333 !important;
+  background: #FFFFFF !important;
 }
 
 textarea {
