@@ -245,11 +245,12 @@ export default function TripListScreen() {
         return
       }
 
-      // Duplikat-Check: Prüfe ob Trip mit gleichem Titel schon existiert
+      // Duplikat-Check: Prüfe ob Trip mit gleichem Titel schon existiert (nur für diesen User)
       const { data: existingTrips } = await supabase
         .from('trips')
         .select('*')
         .eq('titel', tripData.titel)
+        .eq('user_id', user.id)
 
       const existingTrip = existingTrips && existingTrips.length > 0 ? existingTrips[0] : null
       let tripId
