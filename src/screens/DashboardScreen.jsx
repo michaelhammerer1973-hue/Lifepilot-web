@@ -116,7 +116,6 @@ export default function DashboardScreen() {
         .from('visited_countries')
         .select('country_code')
         .eq('user_id', user.id)
-        .eq('user_id', 'user-001')
 
       const visited = visitedData?.map(d => d.country_code) || []
       console.log('Besuchte Länder geladen:', visited)
@@ -141,13 +140,13 @@ export default function DashboardScreen() {
           .from('visited_countries')
           .delete()
           .eq('country_code', countryCode)
-          .eq('user_id', 'user-001')
+          .eq('user_id', user.id)
       } else {
         // Add
         await supabase
           .from('visited_countries')
           .insert({
-            user_id: 'user-001',
+            user_id: user.id,
             country_code: countryCode,
             country_name: countryName,
             visited_date: new Date().toISOString().split('T')[0]
@@ -918,7 +917,7 @@ export default function DashboardScreen() {
                                   .from('visited_countries')
                                   .delete()
                                   .eq('country_code', code)
-                                  .eq('user_id', 'user-001')
+                                  .eq('user_id', user.id)
                                 await loadData()
                               } else {
                                 await handleAddVisitedCountry(code, country.name)
