@@ -31,32 +31,36 @@ export default function LoginScreen() {
     <div style={{
       minHeight: '100vh',
       display: 'flex',
+      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'var(--bg-primary)',
+      backgroundColor: '#F5F7FA',
       padding: '16px'
     }}>
       <div style={{
-        backgroundColor: 'var(--bg-card)',
+        backgroundColor: 'white',
         borderRadius: '12px',
         padding: '32px',
         maxWidth: '400px',
         width: '100%',
-        boxShadow: `0 4px 12px var(--shadow-color)`
+        boxShadow: '0 2px 6px rgba(11, 79, 108, 0.08)'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <img
-            src="/login-logo.png"
-            alt="LifePilot"
-            style={{ height: '264px', marginBottom: '24px', width: 'auto' }}
-          />
-          <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Plane dein Abenteuer</p>
+          <h1 style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#0B4F6C',
+            margin: '0 0 8px 0'
+          }}>
+            LifePilot
+          </h1>
+          <p style={{ fontSize: '14px', color: '#90A4AE', margin: '0' }}>Plane dein Abenteuer</p>
         </div>
 
         <form onSubmit={handleAuth}>
           {isSignup && (
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)', marginBottom: '8px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '8px' }}>
                 Benutzername
               </label>
               <input
@@ -68,19 +72,18 @@ export default function LoginScreen() {
                 style={{
                   width: '100%',
                   padding: '12px',
-                  border: `1px solid var(--border-color)`,
-                  borderRadius: '8px',
+                  border: '1px solid #ddd',
+                  borderRadius: '6px',
                   fontSize: '16px',
                   boxSizing: 'border-box',
-                  backgroundColor: 'var(--bg-input)',
-                  color: 'var(--text-primary)'
+                  fontFamily: 'inherit'
                 }}
               />
             </div>
           )}
 
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)', marginBottom: '8px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '8px' }}>
               E-Mail oder Benutzername
             </label>
             <input
@@ -92,18 +95,17 @@ export default function LoginScreen() {
               style={{
                 width: '100%',
                 padding: '12px',
-                border: `1px solid var(--border-color)`,
-                borderRadius: '8px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
                 fontSize: '16px',
                 boxSizing: 'border-box',
-                backgroundColor: 'var(--bg-input)',
-                color: 'var(--text-primary)'
+                fontFamily: 'inherit'
               }}
             />
           </div>
 
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)', marginBottom: '8px' }}>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '8px' }}>
               Passwort
             </label>
             <div style={{ position: 'relative' }}>
@@ -116,12 +118,11 @@ export default function LoginScreen() {
                 style={{
                   width: '100%',
                   padding: '12px 40px 12px 12px',
-                  border: `1px solid var(--border-color)`,
-                  borderRadius: '8px',
+                  border: '1px solid #ddd',
+                  borderRadius: '6px',
                   fontSize: '16px',
                   boxSizing: 'border-box',
-                  backgroundColor: 'var(--bg-input)',
-                  color: 'var(--text-primary)'
+                  fontFamily: 'inherit'
                 }}
               />
               <button
@@ -140,17 +141,17 @@ export default function LoginScreen() {
                   opacity: loading ? 0.5 : 1
                 }}
               >
-                {showPassword ? '👁️' : '👁️‍🗨️'}
+                {showPassword ? '👁️‍🗨️' : '👁️‍🗨️'}
               </button>
             </div>
           </div>
 
           {error && (
             <div style={{
-              backgroundColor: 'rgba(220, 38, 38, 0.1)',
-              color: 'var(--color-danger)',
+              backgroundColor: '#FFE6E6',
+              color: '#C00',
               padding: '12px',
-              borderRadius: '8px',
+              borderRadius: '6px',
               marginBottom: '16px',
               fontSize: '14px'
             }}>
@@ -163,15 +164,17 @@ export default function LoginScreen() {
             disabled={loading}
             style={{
               width: '100%',
-              padding: '14px',
-              backgroundColor: 'var(--color-primary)',
+              padding: '12px',
+              backgroundColor: '#0B4F6C',
               color: 'white',
               border: 'none',
-              borderRadius: '8px',
+              borderRadius: '6px',
               fontSize: '16px',
               fontWeight: '600',
               cursor: 'pointer',
-              opacity: loading ? 0.6 : 1
+              minHeight: '44px',
+              opacity: loading ? 0.6 : 1,
+              transition: 'background 0.2s'
             }}
           >
             {loading ? 'Lädt...' : isSignup ? 'Registrieren' : 'Anmelden'}
@@ -181,21 +184,19 @@ export default function LoginScreen() {
         <div style={{
           marginTop: '24px',
           textAlign: 'center',
-          borderTop: `1px solid var(--border-light)`,
-          paddingTop: '24px'
+          borderTop: '1px solid #f0f0f0',
+          paddingTop: '16px'
         }}>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '12px' }}>
+          <p style={{ color: '#666', fontSize: '14px', marginBottom: '12px' }}>
             {isSignup ? 'Du hast bereits ein Konto?' : 'Du hast noch kein Konto?'}
           </p>
           <button
             type="button"
-            onClick={() => {
-              setIsSignup(!isSignup)
-            }}
+            onClick={() => setIsSignup(!isSignup)}
             disabled={loading}
             style={{
               backgroundColor: 'transparent',
-              color: 'var(--color-primary)',
+              color: '#0B4F6C',
               border: 'none',
               fontSize: '14px',
               fontWeight: '600',
