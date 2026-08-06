@@ -7,34 +7,55 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['pwa-192x192.png', 'pwa-512x512.png'],
+      includeAssets: ['logo-192.png', 'logo-512.png', 'logo-192-maskable.png', 'logo-512-maskable.png'],
       workbox: {
-        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024 // 3MB
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
+              }
+            }
+          }
+        ]
       },
       manifest: {
-        name: 'LifePilot',
+        name: 'LifePilot - Reiseplanung mit KI',
         short_name: 'LifePilot',
-        description: 'Verwalte deine Reisen mit Claude AI',
+        description: 'Plane deine Reisen mit Claude KI-Unterstützung',
         theme_color: '#0B4F6C',
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',
         scope: '/',
+        orientation: 'portrait-primary',
+        categories: ['travel', 'productivity'],
         icons: [
           {
-            src: '/pwa-192x192.png',
+            src: '/logo-192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/pwa-512x512.png',
+            src: '/logo-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: '/pwa-512x512.png',
+            src: '/logo-192-maskable.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          },
+          {
+            src: '/logo-512-maskable.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
