@@ -33,16 +33,16 @@ export default function LoginScreen() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#f5f7fa',
+      backgroundColor: 'var(--bg-primary)',
       padding: '16px'
     }}>
       <div style={{
-        backgroundColor: 'white',
+        backgroundColor: 'var(--bg-card)',
         borderRadius: '12px',
         padding: '32px',
         maxWidth: '400px',
         width: '100%',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+        boxShadow: `0 4px 12px var(--shadow-color)`
       }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <img
@@ -50,13 +50,13 @@ export default function LoginScreen() {
             alt="LifePilot"
             style={{ height: '264px', marginBottom: '24px', width: 'auto' }}
           />
-          <p style={{ fontSize: '14px', color: '#999' }}>Plane dein Abenteuer</p>
+          <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Plane dein Abenteuer</p>
         </div>
 
         <form onSubmit={handleAuth}>
           {isSignup && (
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '8px' }}>
+              <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)', marginBottom: '8px' }}>
                 Benutzername
               </label>
               <input
@@ -68,17 +68,19 @@ export default function LoginScreen() {
                 style={{
                   width: '100%',
                   padding: '12px',
-                  border: '1px solid #E0E0E0',
+                  border: `1px solid var(--border-color)`,
                   borderRadius: '8px',
                   fontSize: '16px',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
+                  backgroundColor: 'var(--bg-input)',
+                  color: 'var(--text-primary)'
                 }}
               />
             </div>
           )}
 
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '8px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)', marginBottom: '8px' }}>
               E-Mail oder Benutzername
             </label>
             <input
@@ -90,16 +92,18 @@ export default function LoginScreen() {
               style={{
                 width: '100%',
                 padding: '12px',
-                border: '1px solid #E0E0E0',
+                border: `1px solid var(--border-color)`,
                 borderRadius: '8px',
                 fontSize: '16px',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                backgroundColor: 'var(--bg-input)',
+                color: 'var(--text-primary)'
               }}
             />
           </div>
 
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#0B4F6C', marginBottom: '8px' }}>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--color-primary)', marginBottom: '8px' }}>
               Passwort
             </label>
             <div style={{ position: 'relative' }}>
@@ -112,10 +116,12 @@ export default function LoginScreen() {
                 style={{
                   width: '100%',
                   padding: '12px 40px 12px 12px',
-                  border: '1px solid #E0E0E0',
+                  border: `1px solid var(--border-color)`,
                   borderRadius: '8px',
                   fontSize: '16px',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
+                  backgroundColor: 'var(--bg-input)',
+                  color: 'var(--text-primary)'
                 }}
               />
               <button
@@ -141,8 +147,8 @@ export default function LoginScreen() {
 
           {error && (
             <div style={{
-              backgroundColor: '#FFE6E6',
-              color: '#C00',
+              backgroundColor: 'rgba(220, 38, 38, 0.1)',
+              color: 'var(--color-danger)',
               padding: '12px',
               borderRadius: '8px',
               marginBottom: '16px',
@@ -158,7 +164,7 @@ export default function LoginScreen() {
             style={{
               width: '100%',
               padding: '14px',
-              backgroundColor: '#0B4F6C',
+              backgroundColor: 'var(--color-primary)',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -175,10 +181,10 @@ export default function LoginScreen() {
         <div style={{
           marginTop: '24px',
           textAlign: 'center',
-          borderTop: '1px solid #E0E0E0',
+          borderTop: `1px solid var(--border-light)`,
           paddingTop: '24px'
         }}>
-          <p style={{ color: '#666', fontSize: '14px', marginBottom: '12px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '12px' }}>
             {isSignup ? 'Du hast bereits ein Konto?' : 'Du hast noch kein Konto?'}
           </p>
           <button
@@ -189,7 +195,7 @@ export default function LoginScreen() {
             disabled={loading}
             style={{
               backgroundColor: 'transparent',
-              color: '#0B4F6C',
+              color: 'var(--color-primary)',
               border: 'none',
               fontSize: '14px',
               fontWeight: '600',
