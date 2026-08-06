@@ -353,7 +353,7 @@ export default function DashboardScreen() {
       <div style={{
         background: 'var(--bg-card)',
         borderBottom: `2px solid var(--color-primary)`,
-        padding: '24px 16px',
+        padding: '12px 16px',
         boxShadow: `0 2px 6px var(--shadow-color)`
       }}>
         <div style={{
@@ -364,14 +364,14 @@ export default function DashboardScreen() {
           justifyContent: 'center',
           position: 'relative',
           overflow: 'visible',
-          minHeight: '90px'
+          minHeight: '45px'
         }}>
           <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', position: 'absolute', left: '16px' }}>
             <img
               src="/Logo_lifePilot_Dashboard.png"
               alt="LifePilot Dashboard"
               className="dashboard-logo"
-              style={{ height: '80px', width: 'auto' }}
+              style={{ height: '40px', width: 'auto' }}
             />
           </Link>
 
@@ -379,7 +379,7 @@ export default function DashboardScreen() {
             src="/Dashboard_Banner.png"
             alt="LifePilot Banner"
             className="dashboard-banner"
-            style={{ height: '80px', width: 'auto' }}
+            style={{ height: '56px', width: 'auto' }}
           />
 
           <div style={{ position: 'absolute', right: '16px', display: 'flex', gap: '12px', alignItems: 'center' }} ref={userMenuRef}>
@@ -554,6 +554,7 @@ export default function DashboardScreen() {
             paddingTop: typeof window !== 'undefined' && window.innerWidth < 768 ? '40px' : '100px',
             paddingBottom: '24px',
             margin: '0 -16px',
+            marginTop: '-60px',
             paddingLeft: '16px',
             paddingRight: '16px'
           }}>
