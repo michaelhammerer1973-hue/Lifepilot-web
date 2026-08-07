@@ -379,7 +379,7 @@ export default function DashboardScreen() {
             src="/Dashboard_Banner.png"
             alt="LifePilot Banner"
             className="dashboard-banner"
-            style={{ height: '56px', width: 'auto' }}
+            style={{ height: '39px', width: 'auto' }}
           />
 
           <div style={{ position: 'absolute', right: '16px', display: 'flex', gap: '12px', alignItems: 'center' }} ref={userMenuRef}>
