@@ -561,7 +561,7 @@ export default function DashboardScreen() {
           {/* Stats Cards - Top Left and Right */}
           <div style={{
             position: 'absolute',
-            top: '16px',
+            top: '80px',
             left: '16px',
             right: '16px',
             display: 'flex',
