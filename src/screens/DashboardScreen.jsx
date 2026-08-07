@@ -47,13 +47,20 @@ export default function DashboardScreen() {
 
   // Globus-Hintergrund aktualisieren wenn Theme sich ändert
   useEffect(() => {
-    if (globeEl.current) {
-      const scene = globeEl.current.scene()
-      if (scene) {
-        const backgroundColor = theme === 'dark' ? 0x1a1a1a : 0xf5f7fa
-        scene.background = new Color(backgroundColor)
+    const updateGlobeBackground = () => {
+      if (globeEl.current) {
+        const scene = globeEl.current.scene()
+        if (scene) {
+          const backgroundColor = theme === 'dark' ? 0x1a1a1a : 0xf5f7fa
+          scene.background = new Color(backgroundColor)
+        }
       }
     }
+
+    updateGlobeBackground()
+    // Auch nach kurzer Verzögerung aktualisieren für Sicherheit
+    const timer = setTimeout(updateGlobeBackground, 100)
+    return () => clearTimeout(timer)
   }, [theme])
 
   // Schließe User Menu wenn außerhalb geklickt wird
