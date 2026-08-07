@@ -371,7 +371,7 @@ export default function DashboardScreen() {
           justifyContent: 'center',
           position: 'relative',
           overflow: 'visible',
-          minHeight: '50px'
+          minHeight: '75px'
         }}>
           <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', position: 'absolute', left: '16px' }}>
             <img
