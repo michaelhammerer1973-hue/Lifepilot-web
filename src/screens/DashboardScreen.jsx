@@ -191,17 +191,17 @@ export default function DashboardScreen() {
         const lightsToRemove = scene.children.filter(child => child.isLight)
         lightsToRemove.forEach(light => scene.remove(light))
 
-        // Ambient Light (stärker für bessere Sichtbarkeit)
-        const ambientLight = new AmbientLight(0xffffff, 0.6)
+        // Ambient Light (reduziert für stärkeren Kontrast Tag/Nacht)
+        const ambientLight = new AmbientLight(0xffffff, 0.25)
         scene.add(ambientLight)
 
-        // Directional Light (Sonne von links oben)
-        const sunLight = new DirectionalLight(0xfdb813, 0.8)
-        sunLight.position.set(2, 1, 1)
+        // Directional Light (Sonne von links oben - verstärkt)
+        const sunLight = new DirectionalLight(0xfdb813, 1.2)
+        sunLight.position.set(3, 1.5, 1)
         scene.add(sunLight)
 
-        // Optional: Zweite stärkere Light für Schattenseite (mehr Strahlkraft)
-        const fillLight = new DirectionalLight(0x1e3c72, 0.5)
+        // Fill Light (Schattenseite - leicht verstärkt für bessere Sichtbarkeit)
+        const fillLight = new DirectionalLight(0x1e3c72, 0.6)
         fillLight.position.set(-1, -1, -0.5)
         scene.add(fillLight)
       }
