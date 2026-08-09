@@ -382,12 +382,35 @@ export default function DashboardScreen() {
             />
           </Link>
 
-          <img
-            src="/Dashboard_Banner.png"
-            alt="LifePilot Banner"
-            className="dashboard-banner"
-            style={{ width: 'auto' }}
-          />
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+              paddingLeft: '16px',
+              paddingRight: '16px',
+            }}
+          >
+            <div style={{ width: '100%', height: '2px', background: '#C79A2B' }} />
+            <div style={{ fontSize: '28px', fontWeight: 'bold', letterSpacing: '1px' }}>
+              <span style={{ color: '#0B4F6C' }}>Life</span>
+              <span style={{ color: '#C79A2B' }}>Pilot</span>
+            </div>
+            <div
+              style={{
+                fontSize: '11px',
+                fontWeight: '600',
+                letterSpacing: '2px',
+                color: '#0B4F6C',
+                textAlign: 'center',
+                lineHeight: '1.4',
+              }}
+            >
+              DEIN LEBEN. DEINE REISE. DEIN WEG.
+            </div>
+            <div style={{ width: '100%', height: '2px', background: '#C79A2B' }} />
+          </div>
 
           <div style={{ position: 'absolute', right: '16px', display: 'flex', gap: '12px', alignItems: 'center' }} ref={userMenuRef}>
             <BurgerMenu />
