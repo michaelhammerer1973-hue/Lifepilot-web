@@ -574,19 +574,13 @@ export default function DashboardScreen() {
             paddingRight: '16px'
           }}>
           {/* Stats Cards - Top Left and Right */}
-          <div style={{
-            position: 'absolute',
-            top: '80px',
-            left: '16px',
-            right: '16px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: '16px',
-            zIndex: '10'
-          }}>
           <button
             onClick={() => navigate('/trips')}
             style={{
+              position: 'absolute',
+              top: '60px',
+              left: '16px',
+              zIndex: '10',
               background: '#FFF4E6',
               border: '2px solid #C79A2B',
               borderRadius: '8px',
@@ -631,6 +625,10 @@ export default function DashboardScreen() {
           <button
             onClick={() => setShowVisitedModal(true)}
             style={{
+              position: 'absolute',
+              top: '60px',
+              right: '16px',
+              zIndex: '10',
               background: '#0B4F6C',
               border: 'none',
               borderRadius: '8px',
@@ -671,8 +669,6 @@ export default function DashboardScreen() {
               Länder besucht
             </p>
           </button>
-
-          </div>
 
           <div style={{
             height: '650px',
