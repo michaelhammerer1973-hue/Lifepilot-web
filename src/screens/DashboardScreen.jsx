@@ -184,7 +184,7 @@ export default function DashboardScreen() {
     if (globeEl.current) {
       const scene = globeEl.current.scene()
       if (scene) {
-        const backgroundColor = theme === 'dark' ? 0x1a1a1a : 0xf5f7fa
+        const backgroundColor = theme === 'dark' ? 0x1a1a1a : 0x333333
         scene.background = new Color(backgroundColor)
 
         // Entferne alte Lights um Duplikate zu vermeiden
