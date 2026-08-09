@@ -378,7 +378,7 @@ export default function DashboardScreen() {
               src="/Logo_lifePilot_Dashboard.png"
               alt="LifePilot Dashboard"
               className="dashboard-logo"
-              style={{ height: '40px', width: '40px', objectFit: 'contain', objectPosition: 'center' }}
+              style={{ height: '112px', width: '112px', objectFit: 'contain', objectPosition: 'center' }}
             />
           </Link>
 
