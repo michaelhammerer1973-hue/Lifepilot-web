@@ -161,7 +161,7 @@ export default function DaysOverviewScreen() {
       <div className="card" style={{ borderLeft: '4px solid #0B4F6C' }}>
         <h3 className="section-title">📅 Tage</h3>
         {days.map(day => {
-          const today = new Date().toISOString().split('T')[0]
+          const today = new Date().toLocaleDateString('en-CA')
           const isToday = day.datum === today
           return (
           <Link
