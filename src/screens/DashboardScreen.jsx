@@ -694,7 +694,7 @@ export default function DashboardScreen() {
                   polygonsData={countriesData.features}
                   polygonCapColor={(d) => getCountryColor(d)}
                   polygonSideColor="rgba(0, 0, 0, 0.05)"
-                  polygonStrokeColor={() => '#0B4F6C'}
+                  polygonStrokeColor={() => '#FFFFFF'}
                   polygonAltitude={0.02}
                   onGlobeReady={handleGlobeReady}
                   onZoom={handleGlobeZoom}
