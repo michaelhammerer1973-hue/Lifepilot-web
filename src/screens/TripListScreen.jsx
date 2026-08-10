@@ -1161,14 +1161,14 @@ export default function TripListScreen() {
                 type="text"
                 value={editForm.maps_origin || ''}
                 onChange={(e) => setEditForm({...editForm, maps_origin: e.target.value})}
-                placeholder="Start-Adresse (z.B. Porto Airport)"
+                placeholder="Start-Adresse (Maps)"
                 style={{ width: '100%', padding: '12px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '16px' }}
               />
               <input
                 type="text"
                 value={editForm.maps_destination || ''}
                 onChange={(e) => setEditForm({...editForm, maps_destination: e.target.value})}
-                placeholder="End-Adresse (z.B. Fisterra)"
+                placeholder="End-Adresse (Maps)"
                 style={{ width: '100%', padding: '12px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ddd', fontSize: '16px' }}
               />
               <div style={{ display: 'flex', gap: '12px' }}>
